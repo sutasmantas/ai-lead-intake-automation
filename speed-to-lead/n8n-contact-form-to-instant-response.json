@@ -1,0 +1,1766 @@
+{
+    "name": "Lead Capture and instant response",
+    "nodes": [
+      {
+        "parameters": {
+          "formTitle": "Let's Talk!",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "What is your first name?",
+                "placeholder": "First name",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "What is your surname?",
+                "placeholder": "Surname"
+              },
+              {
+                "fieldLabel": "What is your email?",
+                "fieldType": "email",
+                "placeholder": "Email address",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "What is your phone number?",
+                "placeholder": "Mobile number",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "What industry are you in?",
+                "fieldType": "dropdown",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Plumbing"
+                    },
+                    {
+                      "option": "Retail"
+                    },
+                    {
+                      "option": "Hospitality "
+                    },
+                    {
+                      "option": "Electrical / Solar"
+                    },
+                    {
+                      "option": "Realestate"
+                    },
+                    {
+                      "option": "Home Services"
+                    }
+                  ]
+                },
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "What challenges do you need help with?",
+                "fieldType": "textarea",
+                "placeholder": "Detail the challenges your experiencing in your business.",
+                "requiredField": true
+              }
+            ]
+          },
+          "options": {
+            "appendAttribution": false,
+            "buttonLabel": "Submit",
+            "ignoreBots": true,
+            "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 12px;\n\t--font-size-label: 14px;\n\t--font-size-test-notice: 12px;\n\t--font-size-input: 14px;\n\t--font-size-header: 20px;\n\t--font-size-paragraph: 14px;\n\t--font-size-link: 12px;\n\t--font-size-error: 12px;\n\t--font-size-html-h1: 28px;\n\t--font-size-html-h2: 20px;\n\t--font-size-html-h3: 16px;\n\t--font-size-html-h4: 14px;\n\t--font-size-html-h5: 12px;\n\t--font-size-html-h6: 10px;\n\t--font-size-subheader: 14px;\n\n\t/* Colors */\n\t--color-background: #fbfcfe;\n\t--color-test-notice-text: #e6a23d;\n\t--color-test-notice-bg: #fefaf6;\n\t--color-test-notice-border: #f6dcb7;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #dbdfe7;\n\t--color-card-shadow: rgba(99, 77, 255, 0.06);\n\t--color-link: #7e8186;\n\t--color-header: #525356;\n\t--color-label: #555555;\n\t--color-input-border: #dbdfe7;\n\t--color-input-text: #71747A;\n\t--color-focus-border: rgb(90, 76, 194);\n\t--color-submit-btn-bg: #00C9A7;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #ea1f30;\n\t--color-required: #ff6d5a;\n\t--color-clear-button-bg: #7e8186;\n\t--color-html-text: #555;\n\t--color-html-link: #ff6d5a;\n\t--color-header-subtext: #7e8186;\n\n\t/* Border Radii */\n\t--border-radius-card: 8px;\n\t--border-radius-input: 6px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 8px;\n\n\t/* Spacing */\n\t--padding-container-top: 24px;\n\t--padding-card: 24px;\n\t--padding-test-notice-vertical: 12px;\n\t--padding-test-notice-horizontal: 24px;\n\t--margin-bottom-card: 16px;\n\t--padding-form-input: 12px;\n\t--card-padding: 24px;\n\t--card-margin-bottom: 16px;\n\n\t/* Dimensions */\n\t--container-width: 448px;\n\t--submit-btn-height: 48px;\n\t--checkbox-size: 18px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 4px 16px 0px var(--color-card-shadow);\n\t--opacity-placeholder: 0.5;\n}"
+          }
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.2,
+        "position": [
+          -160,
+          0
+        ],
+        "id": "041d1fc7-c562-4e53-a536-9065812a368c",
+        "name": "On form submission",
+        "webhookId": "ad60820f-996e-41c5-ab42-130640900896"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d8394bd8-f6ba-49fd-95df-14f94aadf8e7",
+                "name": "first_name",
+                "value": "={{ $json['What is your first name?'] }}",
+                "type": "string"
+              },
+              {
+                "id": "03e8599c-97c8-479d-a29a-207bc84eecda",
+                "name": "last_name",
+                "value": "={{ $json['What is your surname?'] }}",
+                "type": "string"
+              },
+              {
+                "id": "d5715e2d-6624-476c-8bc3-d1d2488de404",
+                "name": "email_address",
+                "value": "={{ $json['What is your email?'] }}",
+                "type": "string"
+              },
+              {
+                "id": "15e2a886-07f0-403c-8391-51fdc7aeefef",
+                "name": "phone_number",
+                "value": "={{ $json['What is your phone number?'] }}",
+                "type": "string"
+              },
+              {
+                "id": "a4553047-3d4b-4feb-aef5-a2c6603634a1",
+                "name": "industry",
+                "value": "={{ $json['What industry are you in?'] }}",
+                "type": "string"
+              },
+              {
+                "id": "c7fb4c47-05ea-4206-ae27-86729a16aada",
+                "name": "challenges",
+                "value": "={{ $json['What challenges do you need help with?'] }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          64,
+          0
+        ],
+        "id": "ab44f105-6f5f-4b78-9dfa-3c11f88c3de9",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.retellai.com/v2/create-phone-call",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpCustomAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=    {\n\t\"from_number\": \"[YOUR_PHONE_NUMBER]]\",\n\t\"to_number\": \"{{ $json.phone_number }}\",\n\t\"retell_llm_dynamic_variables\": {\n\t\t\"firstName\": \"{{ $json.first_name }}\",\n        \"lastName\": \"{{ $json.last_name }}\",\n \t\t\"phoneNumber\": \"{{ $json.phone_number }}\",\n        \"emailAddress\": \"{{ $json.email_address }}\",\n\t\t\"industry\": \"{{ $json.industry }}\",\n\t\t\"challenges\": \"{{ $json.challenges }}\"\n\t},\n\t\"override_agent_id\": \"agent_592d55d55cdf1871086977299e\"\n     }",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          288,
+          0
+        ],
+        "id": "92f4706d-68ea-4b33-adc9-4a8c6cb72c38",
+        "name": "Retell",
+        "credentials": {
+          "httpCustomAuth": {
+            "id": "HOHoR7jEuwarXZrB",
+            "name": "Custom Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Customer Detail Tracker",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblrHySWoaSDnEra6",
+            "mode": "list",
+            "cachedResultName": "Customers",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tblrHySWoaSDnEra6"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Customer Name": "={{ $('Edit Fields').item.json.first_name }} {{ $('Edit Fields').item.json.last_name }}",
+              "Email Address": "={{ $('Edit Fields').item.json.email_address }}",
+              "Phone Number": "={{ $('Edit Fields').item.json.phone_number }}",
+              "Status": "Prospect",
+              "Industry": "={{ $('Edit Fields').item.json.industry }}",
+              "Challenges": "={{ $('Edit Fields').item.json.challenges }}"
+            },
+            "matchingColumns": [
+              "Phone Number"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Company",
+                "displayName": "Company",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Email Address",
+                "displayName": "Email Address",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Phone Number",
+                "displayName": "Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Active",
+                    "value": "Active"
+                  },
+                  {
+                    "name": "Prospect",
+                    "value": "Prospect"
+                  },
+                  {
+                    "name": "Inactive",
+                    "value": "Inactive"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Industry",
+                "displayName": "Industry",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Date Added",
+                "displayName": "Date Added",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Challenges",
+                "displayName": "Challenges",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Call Summary",
+                "displayName": "Call Summary",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          512,
+          0
+        ],
+        "id": "467747db-cb26-4e0f-ac2a-4e5901525c83",
+        "name": "Create or update a record",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "CPc50IRtXpThnzHh",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# Inbound Lead from the website\n",
+          "height": 320,
+          "width": 1008
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -288,
+          -144
+        ],
+        "id": "8aa74c9c-0564-4b8d-92f3-accb6935b36c",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "# Update Lead Info will call summary",
+          "height": 464,
+          "width": 1424,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -288,
+          208
+        ],
+        "id": "530f147d-5e96-4f3e-8faa-3f97767caf37",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "update-lead",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -160,
+          336
+        ],
+        "id": "2548dbfb-3a23-4811-acc9-e30994afada7",
+        "name": "Webhook",
+        "webhookId": "79f22f38-1368-41d1-8adf-dcfe3cfc04be"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "ec0a8e94-b00c-44dc-8e76-b9e53a42edc0",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "call_analyzed",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          64,
+          336
+        ],
+        "id": "1e5faf8d-d233-4811-a6b1-cb717df86da3",
+        "name": "If call analyze event"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          256,
+          528
+        ],
+        "id": "3fd6fffb-d7a9-4583-965d-36da8a3832c1",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c8f022c6-5176-42c0-b468-4bbbcc55bb39",
+                "leftValue": "={{ $('Webhook').item.json.body.call.retell_llm_dynamic_variables.phoneNumber }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          624,
+          320
+        ],
+        "id": "36e3bb02-bd7d-4170-8b95-73c02ce8cd51",
+        "name": "If data is valid"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Customer Detail Tracker",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblrHySWoaSDnEra6",
+            "mode": "list",
+            "cachedResultName": "Customers",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tblrHySWoaSDnEra6"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Phone Number": "={{ $('Webhook').item.json.body.call.retell_llm_dynamic_variables.phoneNumber }}",
+              "Status": "Active",
+              "Call Summary": "={{ $('Summarization Chain').item.json.output.text }}"
+            },
+            "matchingColumns": [
+              "Phone Number"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true,
+                "removed": false
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Company",
+                "displayName": "Company",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Email Address",
+                "displayName": "Email Address",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Phone Number",
+                "displayName": "Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Active",
+                    "value": "Active"
+                  },
+                  {
+                    "name": "Prospect",
+                    "value": "Prospect"
+                  },
+                  {
+                    "name": "Inactive",
+                    "value": "Inactive"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Industry",
+                "displayName": "Industry",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Date Added",
+                "displayName": "Date Added",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Challenges",
+                "displayName": "Challenges",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Call Summary",
+                "displayName": "Call Summary",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          912,
+          304
+        ],
+        "id": "538cd2f3-aede-4cfa-a1d1-37655eb32291",
+        "name": "Update AirTable",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "CPc50IRtXpThnzHh",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {
+            "summarizationMethodAndPrompts": {
+              "values": {
+                "combineMapPrompt": "=Write a concise summary of the following:\n\n\n\"{{ $json.body.call.transcript }}\"\n\n\nCONCISE SUMMARY:",
+                "prompt": "=Write a concise summary of the following:\n\n\n\"{{ $json.body.call.transcript }}\"\n\n\nCONCISE SUMMARY:"
+              }
+            }
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+        "typeVersion": 2.1,
+        "position": [
+          304,
+          320
+        ],
+        "id": "51bd6759-7c0b-4ec7-a1eb-04361d7ba75d",
+        "name": "Summarization Chain"
+      }
+    ],
+    "pinData": {
+      "Webhook": [
+        {
+          "json": {
+            "headers": {
+              "host": "n8n.amplifyautomation.com.au",
+              "user-agent": "axios/1.11.0",
+              "content-length": "11822",
+              "accept": "application/json, text/plain, */*",
+              "accept-encoding": "gzip, compress, deflate, br",
+              "content-type": "application/json",
+              "via": "1.1 Caddy",
+              "x-forwarded-for": "100.20.5.228",
+              "x-forwarded-host": "n8n.amplifyautomation.com.au",
+              "x-forwarded-proto": "https",
+              "x-retell-signature": "v=1761362963668,d=c18602e3bc11f858f62c497ca57b3e416b7a503c389233f351c927f48c7cad48"
+            },
+            "params": {},
+            "query": {},
+            "body": {
+              "event": "call_analyzed",
+              "call": {
+                "call_id": "call_642890276434f8d3c2984f1d744",
+                "call_type": "web_call",
+                "agent_id": "agent_592d55d55cdf1871086977299e",
+                "agent_version": 2,
+                "agent_name": "Speed to Lead Agent (Outbound)",
+                "retell_llm_dynamic_variables": {
+                  "firstName": "Bob",
+                  "lastName": "",
+                  "emailAddress": "<Replace Email Address>",
+                  "industry": "Plumbing",
+                  "challenges": "Missing calls",
+                  "name": "",
+                  "phoneNumber": "+61418989181"
+                },
+                "call_status": "ended",
+                "start_timestamp": 1761362931502,
+                "end_timestamp": 1761362962649,
+                "duration_ms": 31147,
+                "transcript": "Agent: Hello, this is David from Amplify Automation.\nUser: Hi.\nAgent: Hi, am I speaking with Bob?\nUser: Yes.\nAgent: Hello Bob, this is David from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?\nUser: No. I'm not interested anymore.\nUser: Thank you.\nAgent: Totally fine. I’ll try again another time. Thanks and take care!\n",
+                "transcript_object": [
+                  {
+                    "role": "agent",
+                    "content": "Hello, this is David from Amplify Automation.",
+                    "words": [
+                      {
+                        "word": "Hello, ",
+                        "start": 5.381,
+                        "end": 5.672
+                      },
+                      {
+                        "word": "this ",
+                        "start": 5.672,
+                        "end": 5.823
+                      },
+                      {
+                        "word": "is ",
+                        "start": 5.823,
+                        "end": 5.95
+                      },
+                      {
+                        "word": "David ",
+                        "start": 5.95,
+                        "end": 6.252
+                      },
+                      {
+                        "word": "from ",
+                        "start": 6.252,
+                        "end": 6.403
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 6.403,
+                        "end": 6.786
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 6.786,
+                        "end": 7.564
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 0
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Hi.",
+                    "words": [
+                      {
+                        "word": "Hi.",
+                        "start": 9.548,
+                        "end": 9.867999
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hi, am I speaking with Bob?",
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 11.026,
+                        "end": 11.258
+                      },
+                      {
+                        "word": "am ",
+                        "start": 11.258,
+                        "end": 11.398
+                      },
+                      {
+                        "word": "I ",
+                        "start": 11.398,
+                        "end": 11.467
+                      },
+                      {
+                        "word": "speaking ",
+                        "start": 11.467,
+                        "end": 11.757
+                      },
+                      {
+                        "word": "with ",
+                        "start": 11.757,
+                        "end": 11.908
+                      },
+                      {
+                        "word": "Bob?",
+                        "start": 11.908,
+                        "end": 12.547
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 1
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes.",
+                    "words": [
+                      {
+                        "word": "Yes.",
+                        "start": 13.028,
+                        "end": 13.347999999999999
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hello Bob, this is David from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?",
+                    "words": [
+                      {
+                        "word": "Hello ",
+                        "start": 14.476,
+                        "end": 14.696
+                      },
+                      {
+                        "word": "Bob, ",
+                        "start": 14.696,
+                        "end": 14.859
+                      },
+                      {
+                        "word": "this ",
+                        "start": 14.859,
+                        "end": 14.998
+                      },
+                      {
+                        "word": "is ",
+                        "start": 14.998,
+                        "end": 15.103
+                      },
+                      {
+                        "word": "David ",
+                        "start": 15.103,
+                        "end": 15.381
+                      },
+                      {
+                        "word": "from ",
+                        "start": 15.381,
+                        "end": 15.521
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 15.521,
+                        "end": 15.892
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 15.892,
+                        "end": 16.728
+                      },
+                      {
+                        "word": " I ",
+                        "start": 16.774,
+                        "end": 16.891
+                      },
+                      {
+                        "word": "am ",
+                        "start": 16.891,
+                        "end": 16.995
+                      },
+                      {
+                        "word": "an ",
+                        "start": 16.995,
+                        "end": 17.076
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 17.076,
+                        "end": 17.297
+                      },
+                      {
+                        "word": "voice ",
+                        "start": 17.297,
+                        "end": 17.541
+                      },
+                      {
+                        "word": "assistant, ",
+                        "start": 17.541,
+                        "end": 18.121
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 18.121,
+                        "end": 18.295
+                      },
+                      {
+                        "word": "following ",
+                        "start": 18.295,
+                        "end": 18.632
+                      },
+                      {
+                        "word": "up ",
+                        "start": 18.632,
+                        "end": 18.76
+                      },
+                      {
+                        "word": "on ",
+                        "start": 18.76,
+                        "end": 18.864
+                      },
+                      {
+                        "word": "your ",
+                        "start": 18.864,
+                        "end": 19.038
+                      },
+                      {
+                        "word": "enquiry ",
+                        "start": 19.038,
+                        "end": 19.468
+                      },
+                      {
+                        "word": "from ",
+                        "start": 19.468,
+                        "end": 19.619
+                      },
+                      {
+                        "word": "our ",
+                        "start": 19.619,
+                        "end": 19.735
+                      },
+                      {
+                        "word": "website ",
+                        "start": 19.735,
+                        "end": 20.223
+                      },
+                      {
+                        "word": "regarding ",
+                        "start": 20.223,
+                        "end": 20.571
+                      },
+                      {
+                        "word": "the ",
+                        "start": 20.571,
+                        "end": 20.664
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 20.664,
+                        "end": 21.151
+                      },
+                      {
+                        "word": "you've ",
+                        "start": 21.151,
+                        "end": 21.372
+                      },
+                      {
+                        "word": "been ",
+                        "start": 21.372,
+                        "end": 21.558
+                      },
+                      {
+                        "word": "facing ",
+                        "start": 21.558,
+                        "end": 21.918
+                      },
+                      {
+                        "word": "in ",
+                        "start": 21.918,
+                        "end": 22.034
+                      },
+                      {
+                        "word": "your ",
+                        "start": 22.034,
+                        "end": 22.196
+                      },
+                      {
+                        "word": "business.",
+                        "start": 22.196,
+                        "end": 22.812
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 22.857625,
+                        "end": 22.974625
+                      },
+                      {
+                        "word": "now ",
+                        "start": 22.974625,
+                        "end": 23.124625
+                      },
+                      {
+                        "word": "a ",
+                        "start": 23.124625,
+                        "end": 23.183625
+                      },
+                      {
+                        "word": "good ",
+                        "start": 23.183625,
+                        "end": 23.357625
+                      },
+                      {
+                        "word": "time ",
+                        "start": 23.357625,
+                        "end": 23.566625
+                      },
+                      {
+                        "word": "to ",
+                        "start": 23.566625,
+                        "end": 23.659625
+                      },
+                      {
+                        "word": "talk?",
+                        "start": 23.659625,
+                        "end": 24.297625
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 2
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "No. I'm not interested anymore.",
+                    "words": [
+                      {
+                        "word": "No. ",
+                        "start": 24.718,
+                        "end": 25.038
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 25.038,
+                        "end": 25.358
+                      },
+                      {
+                        "word": "not ",
+                        "start": 25.358,
+                        "end": 25.518
+                      },
+                      {
+                        "word": "interested ",
+                        "start": 25.518,
+                        "end": 25.758
+                      },
+                      {
+                        "word": "anymore.",
+                        "start": 25.758,
+                        "end": 26.078
+                      }
+                    ]
+                  },
+                  {
+                    "role": "user",
+                    "content": "Thank you.",
+                    "words": [
+                      {
+                        "word": "Thank ",
+                        "start": 26.318,
+                        "end": 26.478
+                      },
+                      {
+                        "word": "you.",
+                        "start": 26.478,
+                        "end": 26.558
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Totally fine. I’ll try again another time. Thanks and take care!",
+                    "words": [
+                      {
+                        "word": "Totally ",
+                        "start": 27.624,
+                        "end": 28.077
+                      },
+                      {
+                        "word": "fine. ",
+                        "start": 28.077,
+                        "end": 28.657
+                      },
+                      {
+                        "word": "I’ll ",
+                        "start": 28.703125,
+                        "end": 28.854125
+                      },
+                      {
+                        "word": "try ",
+                        "start": 28.854125,
+                        "end": 29.029125
+                      },
+                      {
+                        "word": "again ",
+                        "start": 29.029125,
+                        "end": 29.226125
+                      },
+                      {
+                        "word": "another ",
+                        "start": 29.226125,
+                        "end": 29.493125
+                      },
+                      {
+                        "word": "time. ",
+                        "start": 29.493125,
+                        "end": 30.050125
+                      },
+                      {
+                        "word": "Thanks ",
+                        "start": 30.085333251953124,
+                        "end": 30.329333251953123
+                      },
+                      {
+                        "word": "and ",
+                        "start": 30.329333251953123,
+                        "end": 30.433333251953126
+                      },
+                      {
+                        "word": "take ",
+                        "start": 30.433333251953126,
+                        "end": 30.607333251953126
+                      },
+                      {
+                        "word": "care!",
+                        "start": 30.607333251953126,
+                        "end": 31.118333251953125
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 4
+                    }
+                  }
+                ],
+                "transcript_with_tool_calls": [
+                  {
+                    "role": "agent",
+                    "content": "Hello, this is David from Amplify Automation.",
+                    "words": [
+                      {
+                        "word": "Hello, ",
+                        "start": 5.381,
+                        "end": 5.672
+                      },
+                      {
+                        "word": "this ",
+                        "start": 5.672,
+                        "end": 5.823
+                      },
+                      {
+                        "word": "is ",
+                        "start": 5.823,
+                        "end": 5.95
+                      },
+                      {
+                        "word": "David ",
+                        "start": 5.95,
+                        "end": 6.252
+                      },
+                      {
+                        "word": "from ",
+                        "start": 6.252,
+                        "end": 6.403
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 6.403,
+                        "end": 6.786
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 6.786,
+                        "end": 7.564
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 0
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Hi.",
+                    "words": [
+                      {
+                        "word": "Hi.",
+                        "start": 9.548,
+                        "end": 9.867999
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hi, am I speaking with Bob?",
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 11.026,
+                        "end": 11.258
+                      },
+                      {
+                        "word": "am ",
+                        "start": 11.258,
+                        "end": 11.398
+                      },
+                      {
+                        "word": "I ",
+                        "start": 11.398,
+                        "end": 11.467
+                      },
+                      {
+                        "word": "speaking ",
+                        "start": 11.467,
+                        "end": 11.757
+                      },
+                      {
+                        "word": "with ",
+                        "start": 11.757,
+                        "end": 11.908
+                      },
+                      {
+                        "word": "Bob?",
+                        "start": 11.908,
+                        "end": 12.547
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 1
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes.",
+                    "words": [
+                      {
+                        "word": "Yes.",
+                        "start": 13.028,
+                        "end": 13.347999999999999
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hello Bob, this is David from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?",
+                    "words": [
+                      {
+                        "word": "Hello ",
+                        "start": 14.476,
+                        "end": 14.696
+                      },
+                      {
+                        "word": "Bob, ",
+                        "start": 14.696,
+                        "end": 14.859
+                      },
+                      {
+                        "word": "this ",
+                        "start": 14.859,
+                        "end": 14.998
+                      },
+                      {
+                        "word": "is ",
+                        "start": 14.998,
+                        "end": 15.103
+                      },
+                      {
+                        "word": "David ",
+                        "start": 15.103,
+                        "end": 15.381
+                      },
+                      {
+                        "word": "from ",
+                        "start": 15.381,
+                        "end": 15.521
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 15.521,
+                        "end": 15.892
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 15.892,
+                        "end": 16.728
+                      },
+                      {
+                        "word": " I ",
+                        "start": 16.774,
+                        "end": 16.891
+                      },
+                      {
+                        "word": "am ",
+                        "start": 16.891,
+                        "end": 16.995
+                      },
+                      {
+                        "word": "an ",
+                        "start": 16.995,
+                        "end": 17.076
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 17.076,
+                        "end": 17.297
+                      },
+                      {
+                        "word": "voice ",
+                        "start": 17.297,
+                        "end": 17.541
+                      },
+                      {
+                        "word": "assistant, ",
+                        "start": 17.541,
+                        "end": 18.121
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 18.121,
+                        "end": 18.295
+                      },
+                      {
+                        "word": "following ",
+                        "start": 18.295,
+                        "end": 18.632
+                      },
+                      {
+                        "word": "up ",
+                        "start": 18.632,
+                        "end": 18.76
+                      },
+                      {
+                        "word": "on ",
+                        "start": 18.76,
+                        "end": 18.864
+                      },
+                      {
+                        "word": "your ",
+                        "start": 18.864,
+                        "end": 19.038
+                      },
+                      {
+                        "word": "enquiry ",
+                        "start": 19.038,
+                        "end": 19.468
+                      },
+                      {
+                        "word": "from ",
+                        "start": 19.468,
+                        "end": 19.619
+                      },
+                      {
+                        "word": "our ",
+                        "start": 19.619,
+                        "end": 19.735
+                      },
+                      {
+                        "word": "website ",
+                        "start": 19.735,
+                        "end": 20.223
+                      },
+                      {
+                        "word": "regarding ",
+                        "start": 20.223,
+                        "end": 20.571
+                      },
+                      {
+                        "word": "the ",
+                        "start": 20.571,
+                        "end": 20.664
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 20.664,
+                        "end": 21.151
+                      },
+                      {
+                        "word": "you've ",
+                        "start": 21.151,
+                        "end": 21.372
+                      },
+                      {
+                        "word": "been ",
+                        "start": 21.372,
+                        "end": 21.558
+                      },
+                      {
+                        "word": "facing ",
+                        "start": 21.558,
+                        "end": 21.918
+                      },
+                      {
+                        "word": "in ",
+                        "start": 21.918,
+                        "end": 22.034
+                      },
+                      {
+                        "word": "your ",
+                        "start": 22.034,
+                        "end": 22.196
+                      },
+                      {
+                        "word": "business.",
+                        "start": 22.196,
+                        "end": 22.812
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 22.857625,
+                        "end": 22.974625
+                      },
+                      {
+                        "word": "now ",
+                        "start": 22.974625,
+                        "end": 23.124625
+                      },
+                      {
+                        "word": "a ",
+                        "start": 23.124625,
+                        "end": 23.183625
+                      },
+                      {
+                        "word": "good ",
+                        "start": 23.183625,
+                        "end": 23.357625
+                      },
+                      {
+                        "word": "time ",
+                        "start": 23.357625,
+                        "end": 23.566625
+                      },
+                      {
+                        "word": "to ",
+                        "start": 23.566625,
+                        "end": 23.659625
+                      },
+                      {
+                        "word": "talk?",
+                        "start": 23.659625,
+                        "end": 24.297625
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 2
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "No. I'm not interested anymore.",
+                    "words": [
+                      {
+                        "word": "No. ",
+                        "start": 24.718,
+                        "end": 25.038
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 25.038,
+                        "end": 25.358
+                      },
+                      {
+                        "word": "not ",
+                        "start": 25.358,
+                        "end": 25.518
+                      },
+                      {
+                        "word": "interested ",
+                        "start": 25.518,
+                        "end": 25.758
+                      },
+                      {
+                        "word": "anymore.",
+                        "start": 25.758,
+                        "end": 26.078
+                      }
+                    ]
+                  },
+                  {
+                    "role": "user",
+                    "content": "Thank you.",
+                    "words": [
+                      {
+                        "word": "Thank ",
+                        "start": 26.318,
+                        "end": 26.478
+                      },
+                      {
+                        "word": "you.",
+                        "start": 26.478,
+                        "end": 26.558
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Totally fine. I’ll try again another time. Thanks and take care!",
+                    "words": [
+                      {
+                        "word": "Totally ",
+                        "start": 27.624,
+                        "end": 28.077
+                      },
+                      {
+                        "word": "fine. ",
+                        "start": 28.077,
+                        "end": 28.657
+                      },
+                      {
+                        "word": "I’ll ",
+                        "start": 28.703125,
+                        "end": 28.854125
+                      },
+                      {
+                        "word": "try ",
+                        "start": 28.854125,
+                        "end": 29.029125
+                      },
+                      {
+                        "word": "again ",
+                        "start": 29.029125,
+                        "end": 29.226125
+                      },
+                      {
+                        "word": "another ",
+                        "start": 29.226125,
+                        "end": 29.493125
+                      },
+                      {
+                        "word": "time. ",
+                        "start": 29.493125,
+                        "end": 30.050125
+                      },
+                      {
+                        "word": "Thanks ",
+                        "start": 30.085333251953124,
+                        "end": 30.329333251953123
+                      },
+                      {
+                        "word": "and ",
+                        "start": 30.329333251953123,
+                        "end": 30.433333251953126
+                      },
+                      {
+                        "word": "take ",
+                        "start": 30.433333251953126,
+                        "end": 30.607333251953126
+                      },
+                      {
+                        "word": "care!",
+                        "start": 30.607333251953126,
+                        "end": 31.118333251953125
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 4
+                    }
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "5f73bacaa5a013ea",
+                    "name": "end_call",
+                    "arguments": "{\"execution_message\":\"Totally fine. I’ll try again another time. Thanks and take care!\"}",
+                    "time_sec": 31.144,
+                    "type": "end_call"
+                  }
+                ],
+                "recording_url": "https://dxc03zgurdly9.cloudfront.net/97ebeecea3ff858e10338ee5794885c6d0bc17f0f5bacb962f86d3dd4ed02714/recording.wav",
+                "recording_multi_channel_url": "https://dxc03zgurdly9.cloudfront.net/97ebeecea3ff858e10338ee5794885c6d0bc17f0f5bacb962f86d3dd4ed02714/recording_multichannel.wav",
+                "public_log_url": "https://dxc03zgurdly9.cloudfront.net/97ebeecea3ff858e10338ee5794885c6d0bc17f0f5bacb962f86d3dd4ed02714/public.log",
+                "disconnection_reason": "agent_hangup",
+                "latency": {
+                  "llm": {
+                    "p50": 504.5,
+                    "p90": 537.1,
+                    "p95": 537.55,
+                    "p99": 537.91,
+                    "min": 2,
+                    "max": 538,
+                    "num": 4,
+                    "values": [
+                      2,
+                      538,
+                      474,
+                      535
+                    ]
+                  },
+                  "e2e": {
+                    "p50": 1058,
+                    "p90": 1091.60078125,
+                    "p95": 1095.80087890625,
+                    "p99": 1099.16095703125,
+                    "min": 1031,
+                    "max": 1100.0009765625,
+                    "num": 3,
+                    "values": [
+                      1100.0009765625,
+                      1058,
+                      1031
+                    ]
+                  },
+                  "tts": {
+                    "p50": 341.5,
+                    "p90": 362.9,
+                    "p95": 365.45,
+                    "p99": 367.49,
+                    "min": 282,
+                    "max": 368,
+                    "num": 4,
+                    "values": [
+                      332,
+                      368,
+                      351,
+                      282
+                    ]
+                  }
+                },
+                "call_cost": {
+                  "product_costs": [
+                    {
+                      "product": "elevenlabs_tts",
+                      "unit_price": 0.1166667,
+                      "cost": 3.7333333
+                    },
+                    {
+                      "product": "gpt_4_1_mini_high_priority",
+                      "unit_price": 0.04,
+                      "cost": 1.28
+                    }
+                  ],
+                  "total_duration_unit_price": 0.1566667,
+                  "total_duration_seconds": 32,
+                  "combined_cost": 5.0133333
+                },
+                "call_analysis": {
+                  "call_summary": "The call was initiated by an AI voice assistant named David, who was following up on an inquiry made by the user, Bob. However, Bob expressed that he is no longer interested in the conversation and declined to continue. The agent acknowledged this and ended the call politely.",
+                  "in_voicemail": false,
+                  "user_sentiment": "Negative",
+                  "call_successful": false,
+                  "custom_analysis_data": {}
+                },
+                "opt_out_sensitive_data_storage": false,
+                "data_storage_setting": "everything",
+                "opt_in_signed_url": false,
+                "llm_token_usage": {
+                  "values": [
+                    2185,
+                    2201,
+                    2259,
+                    2265
+                  ],
+                  "average": 2227.5,
+                  "num_requests": 4
+                },
+                "access_token": "<Enter JWT Token>"
+              }
+            },
+            "webhookUrl": "[YOUR_WEBHOOK_URL]",
+            "executionMode": "production"
+          }
+        }
+      ]
+    },
+    "connections": {
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Retell",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Retell": {
+        "main": [
+          [
+            {
+              "node": "Create or update a record",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "If call analyze event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If call analyze event": {
+        "main": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If data is valid": {
+        "main": [
+          [
+            {
+              "node": "Update AirTable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarization Chain": {
+        "main": [
+          [
+            {
+              "node": "If data is valid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "timezone": "Australia/Brisbane",
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": "bwSF6UHOOMSb4mEW"
+    },
+    "versionId": "4bc4710f-31cb-4f25-82ca-d8e7f1596879",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "8f109cae78f8bb33258a0f6c2230ecd3776524e2b719c5f1b9e0d79272ccd79b"
+    },
+    "id": "oHCRO0glMsgZ9khq",
+    "tags": [
+      {
+        "name": "Retell AI Cert",
+        "id": "EnKlqy89DMQx7LxY",
+        "updatedAt": "2025-11-07T12:50:43.114Z",
+        "createdAt": "2025-11-07T12:50:43.114Z"
+      }
+    ]
+  }

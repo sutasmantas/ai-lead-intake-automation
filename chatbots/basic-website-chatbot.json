@@ -1,0 +1,327 @@
+{
+    "name": "Website Chatbot",
+    "nodes": [
+      {
+        "parameters": {
+          "public": true,
+          "mode": "webhook",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -368,
+          -16
+        ],
+        "id": "cb1687ba-ae82-4813-b37c-d4c118b0b916",
+        "name": "When chat message received",
+        "webhookId": "64e886b9-55a5-4730-b5c2-4b0b2600272c"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.user_message }}",
+          "options": {
+            "systemMessage": "=# Role\nYou are a helpful assistant for a Solar installation company (Solar R US) in Brisbane\nQueensland. Your job is to answer frequently asked questions in a friendly and \nconcise way, and guide users to book an appointment. Only provide answers if you \nhave the information—otherwise, respond with: “I’m not sure about that, but I \ncan check for you.” Once a user is ready to book, ask for the preferred date and\ntime, and pass that to the booking flow.\n\n# Tasks\nHelp the person you are talking to by answering their questions to your best \nknowledge and tool abilities. When a task requires using one of more of these\ntools, please identify which tool is the most appropriate, call it by passing\nalong any required inputs, and execute the actions needed to complete the\nrequests from the human you are talking to.\n\n# Tools\nYou have acess to multiple tools to help you fullfill requests:\n\n1. Get Contact Details: Call this tool to record the persons contact information \nsuch as their email address, full name and mobile number. You MUST use this tool \nbefore booking an appointment if you don't already have the contact details of the\nperson.\n\n2. Get Meetings: Call this to get the list of events, meetings or appointments from the calendar of the person who will attend the meeting from Solar R US. Ensure you only book free when the calendar has free slots. If there is a clash, respond to the customer and ask for an alternate date.\n\n3. Schedule Meeting with Participant: Call this tool to create a new event,\nmeeting or appointment witht he participant mentioned by the human. If you don't\nhave the recipient email address, use the Get Contact Details tool to find it\nbased on the name of phone number of the recipient. If  you can't findan email\nthat matches, then you MUST ask the human for the email of the person you \nshould be scheduling the meeting with.\n\n# Knowledge\n\nHere are some sample questions and answers.\n\n- Q: Whare are you working hours?\n  A: Our office hours are Monday to Friday 9am to 5pm.\n- Q: What suburbs do you typically install solar for?\n\tA: We only service the south side of Brisbane.\n- Q: Do you offer a free in home quote?\n  A: Yes we are happy to organise a time to come to your house to provide a free\n     comprehensive quote based on your requirments and budget.\n- Q: How long does it take to provide a quote?\n  A: Once we have completed the onsite visit to your home, an offical\n     quote will be sent to your email address within 3 business days.\n- Q: What Battery brands do you install?\n  A: We supply and install Sungrow or Tesla batteries for home systems.\n- Q: How many years have you been installing solar?\n  A: We are registered solar installers and have been installing solar in\n     Brisbane home and business for over 10 years.\n\n\n# Notes\n- Please always format your answers in plain text, never in markdown or any\nspecial characters.\n- This is the current date and time: `{{ $now }}`. Please consider it\nwhen making bookings."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -16,
+          -16
+        ],
+        "id": "124ef655-6462-4471-8631-83264053153b",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {
+            "temperature": 0.5
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -160,
+          192
+        ],
+        "id": "7dfaf913-d001-4721-a5ad-9fc27641d4e2",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "04ef31b0-a0b3-46e7-8398-e474743d29f7",
+                "name": "session_id",
+                "value": "={{ $json.sessionId }}",
+                "type": "string"
+              },
+              {
+                "id": "54103723-05b0-4689-a653-bbfebb4bd695",
+                "name": "user_message",
+                "value": "={{ $json.chatInput }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -192,
+          -16
+        ],
+        "id": "f49632e9-f64b-4607-b887-dd96725ff1d1",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $json.session_id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -16,
+          192
+        ],
+        "id": "005a5fcf-1676-4b1b-863a-640bcc89aeca",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "13eR8s-kcA_iuGWP0jYJrvdUoyx3rSvACnjkoHa0iGiM",
+            "mode": "list",
+            "cachedResultName": "Customer List",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13eR8s-kcA_iuGWP0jYJrvdUoyx3rSvACnjkoHa0iGiM/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Sheet1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13eR8s-kcA_iuGWP0jYJrvdUoyx3rSvACnjkoHa0iGiM/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Name ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name_', ``, 'string') }}",
+              "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+              "Phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone', ``, 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Name ",
+                "displayName": "Name ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Email",
+                "displayName": "Email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          144,
+          192
+        ],
+        "id": "c19672d3-75a1-457c-864f-cc63bcba3634",
+        "name": "Get Contact Details",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2a2ZOu4bR28YufNS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "calendar": {
+            "__rl": true,
+            "value": "hello@amplifyautomation.com.au",
+            "mode": "id"
+          },
+          "timeMax": "={{ $now.plus({ week: 2 }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          304,
+          176
+        ],
+        "id": "d0aea2bf-0d2a-4770-91c4-ae5d9d2999ab",
+        "name": "Get Meetings",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "wBmQc0I9rIP4VvuR",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Create an event in Google Calendar",
+          "calendar": {
+            "__rl": true,
+            "value": "hello@amplifyautomation.com.au",
+            "mode": "id"
+          },
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "additionalFields": {
+            "attendees": [
+              "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', ``, 'string') }}",
+              "adcowebsolutions@gmail.com"
+            ],
+            "sendUpdates": "all",
+            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          416,
+          80
+        ],
+        "id": "519970d3-93d6-4939-98cd-ecb59362e31b",
+        "name": "Create an event in Google Calendar",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "wBmQc0I9rIP4VvuR",
+            "name": "Google Calendar account"
+          }
+        }
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Contact Details": {
+        "ai_tool": [
+          []
+        ]
+      },
+      "Get Meetings": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create an event in Google Calendar": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "53295dcb-79be-4e5f-be5e-74c7177bf839",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "8f109cae78f8bb33258a0f6c2230ecd3776524e2b719c5f1b9e0d79272ccd79b"
+    },
+    "id": "KXAlQkuY1L2XzzLL",
+    "tags": []
+  }

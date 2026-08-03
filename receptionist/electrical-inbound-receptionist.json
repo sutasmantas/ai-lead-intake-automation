@@ -1,0 +1,3540 @@
+{
+    "name": "Acme Electrical Retell AI Inbound Flow",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "find-appointment",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -352,
+          112
+        ],
+        "id": "4ed71bc9-1d06-4d1f-8453-388579d3d688",
+        "name": "Find Appointment",
+        "webhookId": "46a6260f-75ad-42cc-a456-2604708a88fa"
+      },
+      {
+        "parameters": {
+          "url": "https://api.cal.com/v2/bookings",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "attendeeEmail",
+                "value": "={{ $json.body.args.user_email.toLowerCase() }}"
+              },
+              {
+                "name": "status",
+                "value": "upcoming"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "cal-api-version",
+                "value": "2024-08-13"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -112,
+          112
+        ],
+        "id": "a92f8795-3c39-4978-b58b-0e0ea242df87",
+        "name": "Get Bookings",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "tmcTvIUDa04a0Bnq",
+            "name": "Retell"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "d8076c51-1772-4873-bd27-060a4c7454ae",
+                "leftValue": "={{ $json.uid }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          848,
+          16
+        ],
+        "id": "bcedf558-2975-4552-bdc6-fe4709dbff98",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"booking_id\": \"{{ $json.uid }}\"}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1088,
+          -32
+        ],
+        "id": "004b96d9-72fa-42f7-9446-57e1c9973e1f",
+        "name": "Respond to Webhook(Success)"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"error\": \"Appointment not found.\"}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1088,
+          256
+        ],
+        "id": "776aad62-1940-4352-b6cf-aefe70becf5b",
+        "name": "Respond to Webhook(Failed)"
+      },
+      {
+        "parameters": {
+          "content": "## Find Appointment ",
+          "height": 560,
+          "width": 1920,
+          "color": 2
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -432,
+          -96
+        ],
+        "typeVersion": 1,
+        "id": "52b02212-f477-4b35-99f5-e2cb2037fa5e",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "cancel-appointment",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -320,
+          800
+        ],
+        "id": "ba2bb19a-65c9-4d6a-b756-534e038a0735",
+        "name": "cancel-appointment",
+        "webhookId": "0a8a8d62-4a0f-469a-a6d9-143a266b3b3b"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.cal.com/v2/bookings/{{ $json.bookingid }}/cancel",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "cal-api-version",
+                "value": "2024-09-13"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "cancellationReason",
+                "value": "={{ $json.cancelReason }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          16,
+          800
+        ],
+        "id": "e745dbe6-5e58-4131-acd1-a493d464dbdb",
+        "name": "Delete Bookings",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "tmcTvIUDa04a0Bnq",
+            "name": "Retell"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"status\": \"cancelled\"}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          480,
+          624
+        ],
+        "id": "ca29f5c1-8f78-4bf2-b1c8-45c2c3aba528",
+        "name": "Respond to Webhook(Success)1"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"error\": \"booking already cancelled\"}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          480,
+          928
+        ],
+        "id": "a7cbe501-98e8-4a17-953d-8841c6322a4b",
+        "name": "Respond to Webhook(Failed)1"
+      },
+      {
+        "parameters": {
+          "content": "## Cancel Appointment\n",
+          "height": 528,
+          "width": 1920,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -432,
+          576
+        ],
+        "typeVersion": 1,
+        "id": "9c38050f-01d0-4658-8056-381772c4cb32",
+        "name": "Sticky Note5"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"status\": \"rescheduled\"}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          608,
+          1312
+        ],
+        "id": "1111943f-0605-4261-8c88-ecfad0d1f0ab",
+        "name": "Respond to Webhook(Success)2"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"error\": \"There was an error when trying to reschedule.\"}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          608,
+          1504
+        ],
+        "id": "51253e30-c381-4f73-bd7b-6effbcd91416",
+        "name": "Respond to Webhook(Failed)2"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "/reschedule-appointment",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -352,
+          1424
+        ],
+        "id": "7477d66b-1fd6-4e26-8940-fc9099b4439c",
+        "name": "reschedule_appointment",
+        "webhookId": "0a8a8d62-4a0f-469a-a6d9-143a266b3b3b"
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "createdAt",
+                "order": "descending"
+              }
+            ]
+          },
+          "options": {
+            "disableDotNotation": false
+          }
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          448,
+          16
+        ],
+        "id": "9f7110ff-e4d2-4a07-b808-bee9ea2201de",
+        "name": "Sort"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          256,
+          16
+        ],
+        "id": "03c2c6b1-7100-4bfc-909f-e7bcb74a6074",
+        "name": "Split Out",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          656,
+          16
+        ],
+        "id": "79ed45f3-f06d-43d7-93fb-a79ee40b4ab7",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "15bfeec1-fa05-4e9a-9665-e2198ec739c2",
+                "name": "new_booking_time",
+                "value": "={{ $json.body.args.new_booking_time }}",
+                "type": "string"
+              },
+              {
+                "id": "4f3fdb9c-3558-483b-a497-ce2104e7d483",
+                "name": "bookingid",
+                "value": "={{ $json.body.args.booking_id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -144,
+          1424
+        ],
+        "id": "89db5788-6205-4498-b24b-fb7ebc47e54c",
+        "name": "Set Fields"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "27f4de94-da54-4016-b09f-3249f18efbda",
+                "name": "bookingid",
+                "value": "={{ $json.body.args.booking_id }}",
+                "type": "string"
+              },
+              {
+                "id": "2896d6c5-d95d-48af-8119-c5b4a1e8848f",
+                "name": "cancelReason",
+                "value": "={{ $json.body.args.cancel_reason }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -144,
+          800
+        ],
+        "id": "466056e2-aaff-4cd0-90b9-5727d973faf4",
+        "name": "Set Fields for Cancel"
+      },
+      {
+        "parameters": {
+          "operation": "formatDate",
+          "date": "={{ $json.new_booking_time }}",
+          "format": "custom",
+          "customFormat": "yyyy-LL-dd'T'hh:mm:ss'Z'",
+          "outputFieldName": "startTimeModified",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dateTime",
+        "typeVersion": 2,
+        "position": [
+          48,
+          1424
+        ],
+        "id": "e38e7486-e53e-4717-adb2-333485ccf22e",
+        "name": "Format Date time"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.cal.com/v2/bookings/{{ $('Set Fields').item.json.bookingid }}/reschedule",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "cal-api-version",
+                "value": "2024-08-13"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "start",
+                "value": "={{ $json.startTimeModified }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          1424
+        ],
+        "id": "03cc17ec-5c2e-4f62-86b1-b025fe25988e",
+        "name": "reschedule booking",
+        "alwaysOutputData": true,
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "tmcTvIUDa04a0Bnq",
+            "name": "Retell"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "876f4f0c-9bbb-4055-b57a-4ede1d6c7ddb",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "success",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          224,
+          800
+        ],
+        "id": "f91553e4-cd2a-40b9-8676-09b769a8a4f2",
+        "name": "If Success"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "4eed97cc-f2da-4966-97ad-8fcbe0feb815",
+                "leftValue": "={{ $json.data }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "array",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          64,
+          112
+        ],
+        "id": "206c2cf7-3b39-46ad-9940-60c4207bb975",
+        "name": "If found"
+      },
+      {
+        "parameters": {
+          "content": "## Reschedule Appointment ",
+          "height": 528,
+          "width": 1920,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -432,
+          1216
+        ],
+        "typeVersion": 1,
+        "id": "68e81baa-305e-409e-9387-4e91ee167c83",
+        "name": "Sticky Note7"
+      }
+    ],
+    "pinData": {
+      "reschedule_appointment": [
+        {
+          "json": {
+            "headers": {
+              "host": "[YOUR_N8N_URL]",
+              "user-agent": "axios/1.11.0",
+              "content-length": "28834",
+              "accept": "application/json, text/plain, */*",
+              "accept-encoding": "gzip, compress, deflate, br",
+              "content-type": "application/json",
+              "via": "1.1 Caddy",
+              "x-forwarded-for": "100.20.5.228",
+              "x-forwarded-host": "[YOUR_N8N_URL]",
+              "x-forwarded-proto": "https",
+              "x-retell-signature": "v=1762000084825,d=acd126e6ecf6295a6e6786660ce8519fdecf4e53f6b714b816b13fc2911c7293"
+            },
+            "params": {},
+            "query": {},
+            "body": {
+              "call": {
+                "call_id": "playground",
+                "call_type": "web_call",
+                "retell_llm_dynamic_variables": {},
+                "call_status": "ongoing",
+                "transcript": "Agent: Hi, this is Emma from Acme Electrical, how can I help you today?\nUser: Hi Emma, I need to reschedule my appointment. Can you help me with that?\nAgent: I can definitely help you reschedule your appointment. What is the email address you used to book the appointment?\nUser: My email address is <Replace Email Address>.\nAgent: Let me find your appointment.\nAgent: I found your appointment. When would you be available to reschedule it? Please provide a range of dates and times that work for you.\nUser: I’m available next week on Tuesday or Thursday after 2 PM. Would either of those days work for you?\nAgent: I will check availability for next week Tuesday and Thursday after 2 PM.\nAgent: Checking availability for next week Thursday after 2 PM.\nAgent: For next week Tuesday after 2 PM, available times are 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. For next week Thursday after 2 PM, available times are 4:30 PM, 5:00 PM, 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. Which date and time would you like to choose?\nUser: I would like to reschedule my appointment for next week Tuesday at 6:00 PM.\nAgent: Just to confirm, you want to reschedule your appointment to next week Tuesday at 6:00 PM Australian Eastern Standard Time, right?\nUser: Yes, that's correct! Please go ahead and confirm the rescheduling.\nAgent: Rescheduling your appointment to next week Tuesday at 6:00 PM.\n",
+                "transcript_object": [
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_962454194a8e5eb435a0931f",
+                    "role": "agent",
+                    "content": "Hi, this is Emma from Acme Electrical, how can I help you today?",
+                    "createdTimestamp": 1762000063611,
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "this ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "is ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Emma ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "from ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Acme ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Electrical, ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "how ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "can ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "I ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "help ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "you ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "today?",
+                        "start": 0,
+                        "end": 0
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_30338c3499a9745f3a89cd87",
+                    "role": "user",
+                    "content": "Hi Emma, I need to reschedule my appointment. Can you help me with that?",
+                    "createdTimestamp": 1762000064396,
+                    "words": [
+                      {
+                        "word": "Hi ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "Emma, ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "I ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "need ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "to ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "my ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "Can ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "you ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "help ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "me ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "with ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "that?",
+                        "start": 1,
+                        "end": 1
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_eb3a28511c41bcd6ce0fef75",
+                    "role": "agent",
+                    "content": "I can definitely help you reschedule your appointment. What is the email address you used to book the appointment?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000066819,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "can ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "definitely ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "help ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "you ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "your ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "What ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "is ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "the ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "email ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "address ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "you ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "used ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "to ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "book ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "the ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "appointment?",
+                        "start": 4,
+                        "end": 4
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_a3b8007327c0898e17591348",
+                    "role": "user",
+                    "content": "My email address is <Replace Email Address>.",
+                    "createdTimestamp": 1762000067258,
+                    "words": [
+                      {
+                        "word": "My ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "email ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "address ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "is ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "<Replace Email Address>.",
+                        "start": 5,
+                        "end": 5
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_9832964733689bee6e3410ec",
+                    "role": "agent",
+                    "content": "Let me find your appointment.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000068685,
+                    "words": [
+                      {
+                        "word": "Let ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "me ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "find ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "your ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "appointment.",
+                        "start": 6,
+                        "end": 6
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_c3cf7ff0ec16cc51c197b9f7",
+                    "role": "agent",
+                    "content": "I found your appointment. When would you be available to reschedule it? Please provide a range of dates and times that work for you.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000071304,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "found ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "your ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "When ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "would ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "you ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "be ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "available ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "to ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "it? ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "Please ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "provide ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "a ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "range ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "of ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "dates ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "and ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "times ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "that ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "work ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "for ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "you.",
+                        "start": 9,
+                        "end": 9
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_698de665bc272fb11d27b097",
+                    "role": "user",
+                    "content": "I’m available next week on Tuesday or Thursday after 2 PM. Would either of those days work for you?",
+                    "createdTimestamp": 1762000072139,
+                    "words": [
+                      {
+                        "word": "I’m ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "available ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "next ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "week ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "on ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "or ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "after ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Would ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "either ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "of ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "those ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "days ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "work ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "for ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "you?",
+                        "start": 10,
+                        "end": 10
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_846e16838b9c41b324e26aca",
+                    "role": "agent",
+                    "content": "I will check availability for next week Tuesday and Thursday after 2 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000074516,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "will ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "check ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "availability ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "for ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "next ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "week ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "and ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "after ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 11,
+                        "end": 11
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_26a934d298d506b9dd543d2c",
+                    "role": "agent",
+                    "content": "Checking availability for next week Thursday after 2 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000077281,
+                    "words": [
+                      {
+                        "word": "Checking ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "availability ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "for ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "next ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "week ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "after ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 14,
+                        "end": 14
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_4782e6e16eda49437cadf348",
+                    "role": "agent",
+                    "content": "For next week Tuesday after 2 PM, available times are 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. For next week Thursday after 2 PM, available times are 4:30 PM, 5:00 PM, 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. Which date and time would you like to choose?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000080724,
+                    "words": [
+                      {
+                        "word": "For ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "next ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "week ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "after ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "available ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "times ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "are ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "For ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "next ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "week ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "after ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "available ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "times ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "are ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "4:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Which ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "date ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "time ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "would ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "you ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "like ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "to ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "choose?",
+                        "start": 17,
+                        "end": 17
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_726b9cafebb5ebacbafedf63",
+                    "role": "user",
+                    "content": "I would like to reschedule my appointment for next week Tuesday at 6:00 PM.",
+                    "createdTimestamp": 1762000081855,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "would ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "like ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "to ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "my ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "for ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "next ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "week ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "at ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 18,
+                        "end": 18
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_b19be71b0b913ce132baa101",
+                    "role": "agent",
+                    "content": "Just to confirm, you want to reschedule your appointment to next week Tuesday at 6:00 PM Australian Eastern Standard Time, right?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000083013,
+                    "words": [
+                      {
+                        "word": "Just ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "confirm, ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "you ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "want ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "your ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "next ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "week ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "at ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "PM ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Australian ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Eastern ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Standard ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Time, ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "right?",
+                        "start": 19,
+                        "end": 19
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_8183c3b0539b7b80a95142ae",
+                    "role": "user",
+                    "content": "Yes, that's correct! Please go ahead and confirm the rescheduling.",
+                    "createdTimestamp": 1762000083449,
+                    "words": [
+                      {
+                        "word": "Yes, ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "that's ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "correct! ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "Please ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "go ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "ahead ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "and ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "confirm ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "the ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "rescheduling.",
+                        "start": 20,
+                        "end": 20
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_33df2342fa7f8c8f47750977",
+                    "role": "agent",
+                    "content": "Rescheduling your appointment to next week Tuesday at 6:00 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000084824,
+                    "words": [
+                      {
+                        "word": "Rescheduling ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "your ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "to ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "next ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "week ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "at ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 21,
+                        "end": 21
+                      }
+                    ]
+                  }
+                ],
+                "transcript_with_tool_calls": [
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_962454194a8e5eb435a0931f",
+                    "role": "agent",
+                    "content": "Hi, this is Emma from Acme Electrical, how can I help you today?",
+                    "createdTimestamp": 1762000063611,
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "this ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "is ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Emma ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "from ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Acme ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "Electrical, ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "how ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "can ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "I ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "help ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "you ",
+                        "start": 0,
+                        "end": 0
+                      },
+                      {
+                        "word": "today?",
+                        "start": 0,
+                        "end": 0
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_30338c3499a9745f3a89cd87",
+                    "role": "user",
+                    "content": "Hi Emma, I need to reschedule my appointment. Can you help me with that?",
+                    "createdTimestamp": 1762000064396,
+                    "words": [
+                      {
+                        "word": "Hi ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "Emma, ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "I ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "need ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "to ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "my ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "Can ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "you ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "help ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "me ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "with ",
+                        "start": 1,
+                        "end": 1
+                      },
+                      {
+                        "word": "that?",
+                        "start": 1,
+                        "end": 1
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "254c78ad019117a7",
+                    "name": "transition_to_reschedule_appointment",
+                    "arguments": "{}",
+                    "time_sec": 2
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_eb3a28511c41bcd6ce0fef75",
+                    "role": "agent",
+                    "content": "I can definitely help you reschedule your appointment. What is the email address you used to book the appointment?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000066819,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "can ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "definitely ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "help ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "you ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "your ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "What ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "is ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "the ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "email ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "address ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "you ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "used ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "to ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "book ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "the ",
+                        "start": 4,
+                        "end": 4
+                      },
+                      {
+                        "word": "appointment?",
+                        "start": 4,
+                        "end": 4
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_a3b8007327c0898e17591348",
+                    "role": "user",
+                    "content": "My email address is <Replace Email Address>.",
+                    "createdTimestamp": 1762000067258,
+                    "words": [
+                      {
+                        "word": "My ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "email ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "address ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "is ",
+                        "start": 5,
+                        "end": 5
+                      },
+                      {
+                        "word": "<Replace Email Address>.",
+                        "start": 5,
+                        "end": 5
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_9832964733689bee6e3410ec",
+                    "role": "agent",
+                    "content": "Let me find your appointment.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000068685,
+                    "words": [
+                      {
+                        "word": "Let ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "me ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "find ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "your ",
+                        "start": 6,
+                        "end": 6
+                      },
+                      {
+                        "word": "appointment.",
+                        "start": 6,
+                        "end": 6
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "53f0ac11a083a445",
+                    "name": "get_booking",
+                    "arguments": "{\"user_email\":\"<Replace Email Address>\",\"execution_message\":\"Let me find your appointment.\"}",
+                    "time_sec": 7
+                  },
+                  {
+                    "role": "tool_call_result",
+                    "tool_call_id": "53f0ac11a083a445",
+                    "content": "{\"booking_id\":\"oo5SmfBv8JTe9gfisDZ9vZ\"}",
+                    "time_sec": 8
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_c3cf7ff0ec16cc51c197b9f7",
+                    "role": "agent",
+                    "content": "I found your appointment. When would you be available to reschedule it? Please provide a range of dates and times that work for you.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000071304,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "found ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "your ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "appointment. ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "When ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "would ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "you ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "be ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "available ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "to ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "it? ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "Please ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "provide ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "a ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "range ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "of ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "dates ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "and ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "times ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "that ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "work ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "for ",
+                        "start": 9,
+                        "end": 9
+                      },
+                      {
+                        "word": "you.",
+                        "start": 9,
+                        "end": 9
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_698de665bc272fb11d27b097",
+                    "role": "user",
+                    "content": "I’m available next week on Tuesday or Thursday after 2 PM. Would either of those days work for you?",
+                    "createdTimestamp": 1762000072139,
+                    "words": [
+                      {
+                        "word": "I’m ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "available ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "next ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "week ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "on ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "or ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "after ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "Would ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "either ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "of ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "those ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "days ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "work ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "for ",
+                        "start": 10,
+                        "end": 10
+                      },
+                      {
+                        "word": "you?",
+                        "start": 10,
+                        "end": 10
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_846e16838b9c41b324e26aca",
+                    "role": "agent",
+                    "content": "I will check availability for next week Tuesday and Thursday after 2 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000074516,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "will ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "check ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "availability ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "for ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "next ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "week ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "and ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "after ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 11,
+                        "end": 11
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 11,
+                        "end": 11
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "e47bd4ef3ef967af",
+                    "name": "check_availability_cal_21",
+                    "arguments": "{\"start_time\":\"2025-11-04T14:00:00\",\"end_time\":\"2025-11-04T23:59:00\",\"execution_message\":\"Checking availability for next week Tuesday after 2 PM.\"}",
+                    "time_sec": 12
+                  },
+                  {
+                    "role": "tool_call_result",
+                    "tool_call_id": "e47bd4ef3ef967af",
+                    "content": "{\"availability_for_selected_time\":[{\"date\":\"Tuesday, 2025 November 11/4/2025 Australian Eastern Standard Time\",\"availability_range\":[\"From 5:30 PM to 5:45 PM\",\"From 6:00 PM to 6:15 PM\",\"From 6:30 PM to 6:45 PM\",\"From 7:00 PM to 7:15 PM\",\"From 7:30 PM to 7:45 PM\",\"From 8:00 PM to 8:15 PM\",\"From 8:30 PM to 8:45 PM\"]}]}",
+                    "time_sec": 13
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_26a934d298d506b9dd543d2c",
+                    "role": "agent",
+                    "content": "Checking availability for next week Thursday after 2 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000077281,
+                    "words": [
+                      {
+                        "word": "Checking ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "availability ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "for ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "next ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "week ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "after ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 14,
+                        "end": 14
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 14,
+                        "end": 14
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "9385e6318fd154fa",
+                    "name": "check_availability_cal_21",
+                    "arguments": "{\"start_time\":\"2025-11-06T14:00:00\",\"end_time\":\"2025-11-06T23:59:00\",\"execution_message\":\"Checking availability for next week Thursday after 2 PM.\"}",
+                    "time_sec": 15
+                  },
+                  {
+                    "role": "tool_call_result",
+                    "tool_call_id": "9385e6318fd154fa",
+                    "content": "{\"availability_for_selected_time\":[{\"date\":\"Thursday, 2025 November 11/6/2025 Australian Eastern Standard Time\",\"availability_range\":[\"From 4:30 PM to 4:45 PM\",\"From 5:00 PM to 5:15 PM\",\"From 5:30 PM to 5:45 PM\",\"From 6:00 PM to 6:15 PM\",\"From 6:30 PM to 6:45 PM\",\"From 7:00 PM to 7:15 PM\",\"From 7:30 PM to 7:45 PM\",\"From 8:00 PM to 8:15 PM\",\"From 8:30 PM to 8:45 PM\"]}]}",
+                    "time_sec": 16
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_4782e6e16eda49437cadf348",
+                    "role": "agent",
+                    "content": "For next week Tuesday after 2 PM, available times are 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. For next week Thursday after 2 PM, available times are 4:30 PM, 5:00 PM, 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, and 8:30 PM. Which date and time would you like to choose?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000080724,
+                    "words": [
+                      {
+                        "word": "For ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "next ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "week ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "after ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "available ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "times ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "are ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "For ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "next ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "week ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Thursday ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "after ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "2 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "available ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "times ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "are ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "4:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "5:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "6:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "7:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:00 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM, ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "8:30 ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "PM. ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "Which ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "date ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "and ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "time ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "would ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "you ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "like ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "to ",
+                        "start": 17,
+                        "end": 17
+                      },
+                      {
+                        "word": "choose?",
+                        "start": 17,
+                        "end": 17
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_726b9cafebb5ebacbafedf63",
+                    "role": "user",
+                    "content": "I would like to reschedule my appointment for next week Tuesday at 6:00 PM.",
+                    "createdTimestamp": 1762000081855,
+                    "words": [
+                      {
+                        "word": "I ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "would ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "like ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "to ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "my ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "for ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "next ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "week ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "at ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 18,
+                        "end": 18
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 18,
+                        "end": 18
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_b19be71b0b913ce132baa101",
+                    "role": "agent",
+                    "content": "Just to confirm, you want to reschedule your appointment to next week Tuesday at 6:00 PM Australian Eastern Standard Time, right?",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000083013,
+                    "words": [
+                      {
+                        "word": "Just ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "confirm, ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "you ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "want ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "reschedule ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "your ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "to ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "next ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "week ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "at ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "PM ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Australian ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Eastern ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Standard ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "Time, ",
+                        "start": 19,
+                        "end": 19
+                      },
+                      {
+                        "word": "right?",
+                        "start": 19,
+                        "end": 19
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_8183c3b0539b7b80a95142ae",
+                    "role": "user",
+                    "content": "Yes, that's correct! Please go ahead and confirm the rescheduling.",
+                    "createdTimestamp": 1762000083449,
+                    "words": [
+                      {
+                        "word": "Yes, ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "that's ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "correct! ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "Please ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "go ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "ahead ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "and ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "confirm ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "the ",
+                        "start": 20,
+                        "end": 20
+                      },
+                      {
+                        "word": "rescheduling.",
+                        "start": 20,
+                        "end": 20
+                      }
+                    ]
+                  },
+                  {
+                    "chatId": "playground",
+                    "messageId": "message_33df2342fa7f8c8f47750977",
+                    "role": "agent",
+                    "content": "Rescheduling your appointment to next week Tuesday at 6:00 PM.",
+                    "model": "gpt-4.1-mini",
+                    "createdTimestamp": 1762000084824,
+                    "words": [
+                      {
+                        "word": "Rescheduling ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "your ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "appointment ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "to ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "next ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "week ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "Tuesday ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "at ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "6:00 ",
+                        "start": 21,
+                        "end": 21
+                      },
+                      {
+                        "word": "PM.",
+                        "start": 21,
+                        "end": 21
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "8263e2165240512c",
+                    "name": "reschedule_booking",
+                    "arguments": "{\"booking_id\":\"oo5SmfBv8JTe9gfisDZ9vZ\",\"new_booking_time\":\"2025-11-04T18:00:00\",\"execution_message\":\"Rescheduling your appointment to next week Tuesday at 6:00 PM.\"}",
+                    "time_sec": 22
+                  }
+                ],
+                "latency": {},
+                "call_cost": {
+                  "product_costs": [],
+                  "combined_cost": 0,
+                  "total_duration_seconds": 0,
+                  "total_duration_unit_price": 0
+                },
+                "opt_out_sensitive_data_storage": false,
+                "tool_mocks": [],
+                "access_token": ""
+              },
+              "name": "reschedule_booking",
+              "args": {
+                "booking_id": "oo5SmfBv8JTe9gfisDZ9vZ",
+                "new_booking_time": "2025-11-04T18:00:00"
+              }
+            },
+            "webhookUrl": "[YOUR_WEBHOOK_URL]",
+            "executionMode": "production"
+          }
+        }
+      ]
+    },
+    "connections": {
+      "Find Appointment": {
+        "main": [
+          [
+            {
+              "node": "Get Bookings",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Bookings": {
+        "main": [
+          [
+            {
+              "node": "If found",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook(Success)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook(Failed)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "cancel-appointment": {
+        "main": [
+          [
+            {
+              "node": "Set Fields for Cancel",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete Bookings": {
+        "main": [
+          [
+            {
+              "node": "If Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "reschedule_appointment": {
+        "main": [
+          [
+            {
+              "node": "Set Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Fields": {
+        "main": [
+          [
+            {
+              "node": "Format Date time",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Fields for Cancel": {
+        "main": [
+          [
+            {
+              "node": "Delete Bookings",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Date time": {
+        "main": [
+          [
+            {
+              "node": "reschedule booking",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "reschedule booking": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook(Success)2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook(Failed)2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Success": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook(Success)1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook(Failed)1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If found": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook(Failed)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "timezone": "Australia/Brisbane",
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false,
+      "errorWorkflow": "bwSF6UHOOMSb4mEW"
+    },
+    "versionId": "ad8c1272-db58-43a7-866c-09c74f64e1b4",
+    "meta": {
+      "instanceId": "8f109cae78f8bb33258a0f6c2230ecd3776524e2b719c5f1b9e0d79272ccd79b"
+    },
+    "id": "FydHQoXlo1rKjiJc",
+    "tags": [
+      {
+        "name": "Retell AI Cert",
+        "id": "EnKlqy89DMQx7LxY",
+        "updatedAt": "2025-11-07T12:50:43.114Z",
+        "createdAt": "2025-11-07T12:50:43.114Z"
+      }
+    ]
+  }

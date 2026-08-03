@@ -1,0 +1,3705 @@
+{
+    "name": "DEMO Contact Form Speed to Lead",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d8394bd8-f6ba-49fd-95df-14f94aadf8e7",
+                "name": "first_name",
+                "value": "={{ $('Call Me Webhook').item.json.body.name }}",
+                "type": "string"
+              },
+              {
+                "id": "d5715e2d-6624-476c-8bc3-d1d2488de404",
+                "name": "email_address",
+                "value": "={{ $('Call Me Webhook').item.json.body.email }}",
+                "type": "string"
+              },
+              {
+                "id": "15e2a886-07f0-403c-8391-51fdc7aeefef",
+                "name": "phone_number",
+                "value": "={{ $('Call Me Webhook').item.json.body.phone }}",
+                "type": "string"
+              },
+              {
+                "id": "b9076d48-6b9b-4fab-aee5-9594e61c914a",
+                "name": "industry",
+                "value": "={{ $('Call Me Webhook').item.json.body.industry }}",
+                "type": "string"
+              },
+              {
+                "id": "bcf1c666-ff6c-4428-b9cd-ccb3c0117626",
+                "name": "message",
+                "value": "={{ $('Call Me Webhook').item.json.body.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          864,
+          -16
+        ],
+        "id": "7171a470-f228-4e06-bf13-b4e52b5c5dd5",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.retellai.com/v2/create-phone-call",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpCustomAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=    {\n\t\"from_number\": \"+15055945759\",\n\t\"to_number\": \"{{ $json.phone_number }}\",\n\t\"retell_llm_dynamic_variables\": {\n\t\t\"firstName\": \"{{ $json.first_name }}\",\n \t\t\"phoneNumber\": \"{{ $json.phone_number }}\",\n        \"emailAddress\": \"{{ $json.email_address }}\",\n        \"industry\": \"{{ $json.industry }}\",\n        \"message\": \"{{ $json.message }}\"\n\t},\n\t\"override_agent_id\": \"agent_c7825bb4ca2b24034a38d69833\"\n     }",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1232,
+          -16
+        ],
+        "id": "ff1bcb77-4ecb-410f-9238-ad7ab4c019ef",
+        "name": "Retell",
+        "credentials": {
+          "httpCustomAuth": {
+            "id": "0E0yt2YaAZp4qKKq",
+            "name": "Retell API Key"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Amplify Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl03jv1J7cC7BJAG",
+            "mode": "list",
+            "cachedResultName": "Demo Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tbl03jv1J7cC7BJAG"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Customer Name": "={{ $('Edit Fields').item.json.first_name }}",
+              "Phone Number": "={{ $('Edit Fields').item.json.phone_number }}",
+              "Industry": "={{ $('Edit Fields').item.json.industry }}",
+              "Status": "Prospect",
+              "Email Address": "={{ $('Edit Fields').item.json.email_address }}"
+            },
+            "matchingColumns": [
+              "Email Address"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true,
+                "removed": false
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Company",
+                "displayName": "Company",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Email Address",
+                "displayName": "Email Address",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Phone Number",
+                "displayName": "Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Active",
+                    "value": "Active"
+                  },
+                  {
+                    "name": "Prospect",
+                    "value": "Prospect"
+                  },
+                  {
+                    "name": "Inactive",
+                    "value": "Inactive"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Industry",
+                "displayName": "Industry",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Date Added",
+                "displayName": "Date Added",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Challenges",
+                "displayName": "Challenges",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Call Summary",
+                "displayName": "Call Summary",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Customer Sentiment",
+                "displayName": "Customer Sentiment",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1440,
+          -16
+        ],
+        "id": "902c8368-c959-4323-8060-0d03dc162261",
+        "name": "Create or update a record",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EwvK7eAmkNeEEewM",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# Inbound Lead from DEMO website\n",
+          "height": 320,
+          "width": 1424
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          336,
+          -160
+        ],
+        "id": "54f7e5ed-9ebd-4aab-b4aa-97bf831507ec",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "inbound-lead-info",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          384,
+          -16
+        ],
+        "id": "457b6950-78e4-485c-a553-7d5200433845",
+        "name": "Call Me Webhook",
+        "webhookId": "67087de2-395d-4702-bb31-b036631b1a50"
+      },
+      {
+        "parameters": {
+          "amount": 20
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1040,
+          -16
+        ],
+        "id": "b64227fb-5af7-4dc8-8198-6875e552ee3a",
+        "name": "Wait 20 secs",
+        "webhookId": "2db69eec-6791-49a1-bf8f-e4d654f57fe8"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "update-lead-info",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          448,
+          400
+        ],
+        "id": "19b71b1b-23cb-479a-94fc-4ec696b22f5f",
+        "name": "Webhook",
+        "webhookId": "2f2f340b-e248-4a54-be2d-65d2011bac8b"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "ec0a8e94-b00c-44dc-8e76-b9e53a42edc0",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "call_analyzed",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          672,
+          400
+        ],
+        "id": "f4633796-1774-49b6-96a0-a21072689fca",
+        "name": "If call analyze event"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c8f022c6-5176-42c0-b468-4bbbcc55bb39",
+                "leftValue": "={{ $('Webhook').item.json.body.call.retell_llm_dynamic_variables.phoneNumber }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1248,
+          400
+        ],
+        "id": "965309a2-e084-44fe-b51f-df3a05458d5d",
+        "name": "If data is valid"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Amplify Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl03jv1J7cC7BJAG",
+            "mode": "list",
+            "cachedResultName": "Demo Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tbl03jv1J7cC7BJAG"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Phone Number": "={{ $('Webhook').item.json.body.call.retell_llm_dynamic_variables.phoneNumber }}",
+              "Status": "Active",
+              "Call Summary": "={{ $('Summarization Chain').item.json.output.text }}",
+              "Email Address": "={{ $('Webhook').item.json.body.call.retell_llm_dynamic_variables.emailAddress }}",
+              "Customer Sentiment": "={{ $('Webhook').item.json.body.call.call_analysis.user_sentiment }}"
+            },
+            "matchingColumns": [
+              "Email Address"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true,
+                "removed": false
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Company",
+                "displayName": "Company",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Email Address",
+                "displayName": "Email Address",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Phone Number",
+                "displayName": "Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Active",
+                    "value": "Active"
+                  },
+                  {
+                    "name": "Prospect",
+                    "value": "Prospect"
+                  },
+                  {
+                    "name": "Inactive",
+                    "value": "Inactive"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Industry",
+                "displayName": "Industry",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Date Added",
+                "displayName": "Date Added",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Challenges",
+                "displayName": "Challenges",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": true
+              },
+              {
+                "id": "Call Summary",
+                "displayName": "Call Summary",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Customer Sentiment",
+                "displayName": "Customer Sentiment",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "IsDemo",
+                "displayName": "IsDemo",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "",
+                    "value": ""
+                  },
+                  {
+                    "name": "Yes",
+                    "value": "Yes"
+                  },
+                  {
+                    "name": "No",
+                    "value": "No"
+                  }
+                ],
+                "readOnly": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1472,
+          400
+        ],
+        "id": "4ac0209e-b287-49e9-accd-332548b0ade5",
+        "name": "Update AirTable",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EwvK7eAmkNeEEewM",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {
+            "summarizationMethodAndPrompts": {
+              "values": {
+                "combineMapPrompt": "=Write a concise summary of the following:\n\n\n\"{{ $json.body.call.transcript }}\"\n\n\nCONCISE SUMMARY:",
+                "prompt": "=Write a concise summary of the following:\n\n\n\"{{ $json.body.call.transcript }}\"\n\n\nCONCISE SUMMARY:"
+              }
+            }
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+        "typeVersion": 2.1,
+        "position": [
+          896,
+          400
+        ],
+        "id": "1c56b6b6-cdea-496e-b906-c735970dc757",
+        "name": "Summarization Chain"
+      },
+      {
+        "parameters": {
+          "content": "# Call Summary from DEMO website\n",
+          "height": 480,
+          "width": 1424,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          336,
+          272
+        ],
+        "id": "765f6dfe-2a8c-4a07-8ec4-52f30eca2743",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          832,
+          608
+        ],
+        "id": "05ac46a8-d0b4-4576-9256-9ded306797c6",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "9f112c5f-97b6-4d0a-8b19-76ffaae54df7",
+                "leftValue": "={{ $json.body.name }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "b05cd384-36d5-4b36-8472-895569832fda",
+                "leftValue": "={{ $json.body.phone }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          624,
+          -16
+        ],
+        "id": "496cfb21-43b3-410f-91aa-28bca3d043ec",
+        "name": "If Valid Data"
+      }
+    ],
+    "pinData": {
+      "Call Me Webhook": [
+        {
+          "json": {
+            "headers": {
+              "host": "n8n.amplifyautomation.ai",
+              "user-agent": "axios/1.13.2",
+              "content-length": "174",
+              "accept": "application/json, text/plain, */*",
+              "accept-encoding": "gzip, compress, deflate, br",
+              "content-type": "application/json",
+              "via": "1.1 Caddy",
+              "x-forwarded-for": "118.208.15.81",
+              "x-forwarded-host": "n8n.amplifyautomation.ai",
+              "x-forwarded-proto": "https"
+            },
+            "params": {},
+            "query": {},
+            "body": {
+              "name": "Bob",
+              "email": "<EMAIL_ADDRESS>",
+              "phone": "<PHONE_NUMBER>",
+              "industry": "Plumbing",
+              "message": "I keep missing calls when I'm on the job",
+              "timestamp": "2025-12-20T11:54:22.312Z"
+            },
+            "webhookUrl": "https://n8n.amplifyautomation.ai/webhook/inbound-lead-info",
+            "executionMode": "production"
+          }
+        }
+      ],
+      "Webhook": [
+        {
+          "json": {
+            "headers": {
+              "host": "amplifyautomation.app.n8n.cloud",
+              "user-agent": "axios/1.13.2",
+              "content-length": "38199",
+              "accept": "application/json, text/plain, */*",
+              "accept-encoding": "gzip, br",
+              "cdn-loop": "cloudflare; loops=1; subreqs=1",
+              "cf-connecting-ip": "100.20.5.228",
+              "cf-ew-via": "15",
+              "cf-ipcountry": "US",
+              "cf-ray": "9a8ab87733ca6c24-PDX",
+              "cf-visitor": "{\"scheme\":\"https\"}",
+              "cf-worker": "n8n.cloud",
+              "content-type": "application/json",
+              "x-forwarded-for": "100.20.5.228, 172.68.174.179",
+              "x-forwarded-host": "amplifyautomation.app.n8n.cloud",
+              "x-forwarded-port": "443",
+              "x-forwarded-proto": "https",
+              "x-forwarded-server": "traefik-prod-users-gwc-7-c479b4d45-6cbb8",
+              "x-is-trusted": "yes",
+              "x-real-ip": "100.20.5.228",
+              "x-retell-signature": "v=1764845192782,d=a7c4d63cd840f5ff6d2eb72b9b0ec2121e8e5bd4566ec9d8aca72b339512121f"
+            },
+            "params": {},
+            "query": {},
+            "body": {
+              "event": "call_analyzed",
+              "call": {
+                "call_id": "call_4a13749f0f2761148ae334da9f0",
+                "call_type": "phone_call",
+                "agent_id": "agent_47301bb9bee224b9892a0a4901",
+                "agent_version": 9,
+                "agent_name": "Speed to Lead Agent (Outbound)",
+                "retell_llm_dynamic_variables": {
+                  "firstName": "bob",
+                  "phoneNumber": "<PHONE_NUMBER>",
+                  "emailAddress": "<EMAIL_ADDRESS>"
+                },
+                "custom_sip_headers": {
+                  "X-RetellAI-Direction": "Outbound",
+                  "X-RetellAI-CallId": "call_4a13749f0f2761148ae334da9f0"
+                },
+                "call_status": "ended",
+                "start_timestamp": 1764845106743,
+                "end_timestamp": 1764845191321,
+                "duration_ms": 84578,
+                "transcript": "User: Hello. Who's speaking?\nAgent: Hi, am I speaking with bob?\nUser: Yes.\nAgent: Hello bob, this is Sarah from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?\nUser: Yeah. Is.\nAgent: Perfect, thank you. Can I confirm you are running a business and are interested in how AI can help save you time and money?\nUser: Yeah. I am.\nAgent: Ok, would you be open to a free, no obligation 30 minute discovery call where we will listen in more detail about the challenges you mentioned and discuss how AI and Automation could help your business? No jargon, No sales tactics, just real results.\nUser: Okay. Sounds good. Yep.\nAgent: What day and time work best for you?\nUser: Monday, the eighth of December, at ten thirty AM.\nAgent: Let \nAgent: me check our calendar for Monday, the eighth \nAgent: of December, at ten thirty AM.The time you requested, \nAgent: Monday, the eighth of December at ten thirty AM, is available. I will book that for you now.I have booked your free 30 minute discovery call for Monday, the eighth of December at ten thirty AM. Thanks for your time bob. Is there anything else I can help you with today?\nUser: All good.\nAgent: Looking forward to the conversation. Have a good day!\n",
+                "transcript_object": [
+                  {
+                    "role": "user",
+                    "content": "Hello. Who's speaking?",
+                    "words": [
+                      {
+                        "word": "Hello. ",
+                        "start": 1.526,
+                        "end": 1.926
+                      },
+                      {
+                        "word": "Who's ",
+                        "start": 1.926,
+                        "end": 2.1659998
+                      },
+                      {
+                        "word": "speaking?",
+                        "start": 2.1659998,
+                        "end": 2.4859999999999998
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hi, am I speaking with bob?",
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 4.257333251953125,
+                        "end": 4.624833251953125
+                      },
+                      {
+                        "word": "am ",
+                        "start": 4.624833251953125,
+                        "end": 4.799
+                      },
+                      {
+                        "word": "I ",
+                        "start": 4.799,
+                        "end": 4.8765
+                      },
+                      {
+                        "word": "speaking ",
+                        "start": 4.8765,
+                        "end": 5.1665
+                      },
+                      {
+                        "word": "with ",
+                        "start": 5.1665,
+                        "end": 5.302333251953125
+                      },
+                      {
+                        "word": "bob?",
+                        "start": 5.302333251953125,
+                        "end": 5.747333251953125
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 2
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes.",
+                    "words": [
+                      {
+                        "word": "Yes.",
+                        "start": 7.325999700000001,
+                        "end": 8.766
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hello bob, this is Sarah from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?",
+                    "words": [
+                      {
+                        "word": "Hello ",
+                        "start": 9.686333251953124,
+                        "end": 9.976333251953125
+                      },
+                      {
+                        "word": "bob, ",
+                        "start": 9.976333251953125,
+                        "end": 10.218
+                      },
+                      {
+                        "word": "this ",
+                        "start": 10.218,
+                        "end": 10.383
+                      },
+                      {
+                        "word": "is ",
+                        "start": 10.383,
+                        "end": 10.498833251953124
+                      },
+                      {
+                        "word": "Sarah ",
+                        "start": 10.498833251953124,
+                        "end": 10.818
+                      },
+                      {
+                        "word": "from ",
+                        "start": 10.818,
+                        "end": 11.011333251953126
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 11.011333251953126,
+                        "end": 11.447166748046875
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 11.447166748046875,
+                        "end": 12.201333251953125
+                      },
+                      {
+                        "word": " I ",
+                        "start": 12.226791748046875,
+                        "end": 12.400958251953124
+                      },
+                      {
+                        "word": "am ",
+                        "start": 12.400958251953124,
+                        "end": 12.526791748046875
+                      },
+                      {
+                        "word": "an ",
+                        "start": 12.526791748046875,
+                        "end": 12.642625
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 12.642625,
+                        "end": 13.039291748046875
+                      },
+                      {
+                        "word": "voice ",
+                        "start": 13.039291748046875,
+                        "end": 13.271791748046875
+                      },
+                      {
+                        "word": "assistant, ",
+                        "start": 13.271791748046875,
+                        "end": 13.890958251953125
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 13.890958251953125,
+                        "end": 14.104291748046874
+                      },
+                      {
+                        "word": "following ",
+                        "start": 14.104291748046874,
+                        "end": 14.500958251953126
+                      },
+                      {
+                        "word": "up ",
+                        "start": 14.500958251953126,
+                        "end": 14.675125
+                      },
+                      {
+                        "word": "on ",
+                        "start": 14.675125,
+                        "end": 14.800125
+                      },
+                      {
+                        "word": "your ",
+                        "start": 14.800125,
+                        "end": 14.955125
+                      },
+                      {
+                        "word": "enquiry ",
+                        "start": 14.955125,
+                        "end": 15.545125
+                      },
+                      {
+                        "word": "from ",
+                        "start": 15.545125,
+                        "end": 15.767625
+                      },
+                      {
+                        "word": "our ",
+                        "start": 15.767625,
+                        "end": 15.951791748046874
+                      },
+                      {
+                        "word": "website ",
+                        "start": 15.951791748046874,
+                        "end": 16.658458251953125
+                      },
+                      {
+                        "word": "regarding ",
+                        "start": 16.658458251953125,
+                        "end": 17.131791748046876
+                      },
+                      {
+                        "word": "the ",
+                        "start": 17.131791748046876,
+                        "end": 17.219291748046874
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 17.219291748046874,
+                        "end": 17.712625
+                      },
+                      {
+                        "word": "you've ",
+                        "start": 17.712625,
+                        "end": 17.896791748046876
+                      },
+                      {
+                        "word": "been ",
+                        "start": 17.896791748046876,
+                        "end": 18.080125
+                      },
+                      {
+                        "word": "facing ",
+                        "start": 18.080125,
+                        "end": 18.476791748046875
+                      },
+                      {
+                        "word": "in ",
+                        "start": 18.476791748046875,
+                        "end": 18.564291748046877
+                      },
+                      {
+                        "word": "your ",
+                        "start": 18.564291748046877,
+                        "end": 18.728458251953125
+                      },
+                      {
+                        "word": "business.",
+                        "start": 18.728458251953125,
+                        "end": 19.444291748046876
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 19.497416748046874,
+                        "end": 19.681583251953125
+                      },
+                      {
+                        "word": "now ",
+                        "start": 19.681583251953125,
+                        "end": 19.826583251953124
+                      },
+                      {
+                        "word": "a ",
+                        "start": 19.826583251953124,
+                        "end": 19.884916748046876
+                      },
+                      {
+                        "word": "good ",
+                        "start": 19.884916748046876,
+                        "end": 20.01075
+                      },
+                      {
+                        "word": "time ",
+                        "start": 20.01075,
+                        "end": 20.16575
+                      },
+                      {
+                        "word": "to ",
+                        "start": 20.16575,
+                        "end": 20.252416748046876
+                      },
+                      {
+                        "word": "talk?",
+                        "start": 20.252416748046876,
+                        "end": 20.697416748046876
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 4
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yeah. Is.",
+                    "words": [
+                      {
+                        "word": "Yeah. ",
+                        "start": 21.445999,
+                        "end": 21.685998
+                      },
+                      {
+                        "word": "Is.",
+                        "start": 21.956,
+                        "end": 22.196
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Perfect, thank you. Can I confirm you are running a business and are interested in how AI can help save you time and money?",
+                    "words": [
+                      {
+                        "word": "Perfect, ",
+                        "start": 25.447333251953125,
+                        "end": 25.844
+                      },
+                      {
+                        "word": "thank ",
+                        "start": 25.844,
+                        "end": 26.0665
+                      },
+                      {
+                        "word": "you.",
+                        "start": 26.0665,
+                        "end": 26.492333251953124
+                      },
+                      {
+                        "word": " Can ",
+                        "start": 26.510166748046874,
+                        "end": 26.732666748046874
+                      },
+                      {
+                        "word": "I ",
+                        "start": 26.732666748046874,
+                        "end": 26.829333251953123
+                      },
+                      {
+                        "word": "confirm ",
+                        "start": 26.829333251953123,
+                        "end": 27.206833251953125
+                      },
+                      {
+                        "word": "you ",
+                        "start": 27.206833251953125,
+                        "end": 27.3035
+                      },
+                      {
+                        "word": "are ",
+                        "start": 27.3035,
+                        "end": 27.400166748046875
+                      },
+                      {
+                        "word": "running ",
+                        "start": 27.400166748046875,
+                        "end": 27.6135
+                      },
+                      {
+                        "word": "a ",
+                        "start": 27.6135,
+                        "end": 27.681
+                      },
+                      {
+                        "word": "business ",
+                        "start": 27.681,
+                        "end": 28.116
+                      },
+                      {
+                        "word": "and ",
+                        "start": 28.116,
+                        "end": 28.281
+                      },
+                      {
+                        "word": "are ",
+                        "start": 28.281,
+                        "end": 28.416
+                      },
+                      {
+                        "word": "interested ",
+                        "start": 28.416,
+                        "end": 28.900166748046875
+                      },
+                      {
+                        "word": "in ",
+                        "start": 28.900166748046875,
+                        "end": 29.016
+                      },
+                      {
+                        "word": "how ",
+                        "start": 29.016,
+                        "end": 29.229333251953125
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 29.229333251953125,
+                        "end": 29.5485
+                      },
+                      {
+                        "word": "can ",
+                        "start": 29.5485,
+                        "end": 29.6935
+                      },
+                      {
+                        "word": "help ",
+                        "start": 29.6935,
+                        "end": 29.886833251953124
+                      },
+                      {
+                        "word": "save ",
+                        "start": 29.886833251953124,
+                        "end": 30.100166748046874
+                      },
+                      {
+                        "word": "you ",
+                        "start": 30.100166748046874,
+                        "end": 30.225166748046874
+                      },
+                      {
+                        "word": "time ",
+                        "start": 30.225166748046874,
+                        "end": 30.457666748046876
+                      },
+                      {
+                        "word": "and ",
+                        "start": 30.457666748046876,
+                        "end": 30.564333251953126
+                      },
+                      {
+                        "word": "money?",
+                        "start": 30.564333251953126,
+                        "end": 31.057666748046874
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 6
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yeah. I am.",
+                    "words": [
+                      {
+                        "word": "Yeah. ",
+                        "start": 32.155998,
+                        "end": 32.396
+                      },
+                      {
+                        "word": "I ",
+                        "start": 32.396,
+                        "end": 32.556
+                      },
+                      {
+                        "word": "am.",
+                        "start": 32.556,
+                        "end": 32.716
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Ok, would you be open to a free, no obligation 30 minute discovery call where we will listen in more detail about the challenges you mentioned and discuss how AI and Automation could help your business? No jargon, No sales tactics, just real results.",
+                    "words": [
+                      {
+                        "word": "Ok, ",
+                        "start": 34.82016674804687,
+                        "end": 35.37183325195313
+                      },
+                      {
+                        "word": "would ",
+                        "start": 35.37183325195313,
+                        "end": 35.546
+                      },
+                      {
+                        "word": "you ",
+                        "start": 35.546,
+                        "end": 35.65183325195313
+                      },
+                      {
+                        "word": "be ",
+                        "start": 35.65183325195313,
+                        "end": 35.7585
+                      },
+                      {
+                        "word": "open ",
+                        "start": 35.7585,
+                        "end": 36.01016674804688
+                      },
+                      {
+                        "word": "to ",
+                        "start": 36.01016674804688,
+                        "end": 36.136
+                      },
+                      {
+                        "word": "a ",
+                        "start": 36.136,
+                        "end": 36.26183325195313
+                      },
+                      {
+                        "word": "free, ",
+                        "start": 36.26183325195313,
+                        "end": 36.62933325195313
+                      },
+                      {
+                        "word": "no ",
+                        "start": 36.62933325195313,
+                        "end": 36.774333251953124
+                      },
+                      {
+                        "word": "obligation ",
+                        "start": 36.774333251953124,
+                        "end": 37.2585
+                      },
+                      {
+                        "word": "30 ",
+                        "start": 37.2585,
+                        "end": 37.50933325195312
+                      },
+                      {
+                        "word": "minute ",
+                        "start": 37.50933325195312,
+                        "end": 37.722666748046876
+                      },
+                      {
+                        "word": "discovery ",
+                        "start": 37.722666748046876,
+                        "end": 38.1385
+                      },
+                      {
+                        "word": "call ",
+                        "start": 38.1385,
+                        "end": 38.40016674804688
+                      },
+                      {
+                        "word": "where ",
+                        "start": 38.40016674804688,
+                        "end": 38.554333251953125
+                      },
+                      {
+                        "word": "we ",
+                        "start": 38.554333251953125,
+                        "end": 38.622666748046875
+                      },
+                      {
+                        "word": "will ",
+                        "start": 38.622666748046875,
+                        "end": 38.77683325195313
+                      },
+                      {
+                        "word": "listen ",
+                        "start": 38.77683325195313,
+                        "end": 39.0285
+                      },
+                      {
+                        "word": "in ",
+                        "start": 39.0285,
+                        "end": 39.12516674804687
+                      },
+                      {
+                        "word": "more ",
+                        "start": 39.12516674804687,
+                        "end": 39.3385
+                      },
+                      {
+                        "word": "detail ",
+                        "start": 39.3385,
+                        "end": 39.715166748046876
+                      },
+                      {
+                        "word": "about ",
+                        "start": 39.715166748046876,
+                        "end": 39.94766674804688
+                      },
+                      {
+                        "word": "the ",
+                        "start": 39.94766674804688,
+                        "end": 40.035166748046876
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 40.035166748046876,
+                        "end": 40.48933325195313
+                      },
+                      {
+                        "word": "you ",
+                        "start": 40.48933325195313,
+                        "end": 40.62516674804687
+                      },
+                      {
+                        "word": "mentioned ",
+                        "start": 40.62516674804687,
+                        "end": 40.982666748046874
+                      },
+                      {
+                        "word": "and ",
+                        "start": 40.982666748046874,
+                        "end": 41.060166748046875
+                      },
+                      {
+                        "word": "discuss ",
+                        "start": 41.060166748046875,
+                        "end": 41.22433325195313
+                      },
+                      {
+                        "word": "how ",
+                        "start": 41.22433325195313,
+                        "end": 41.582666748046876
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 41.582666748046876,
+                        "end": 41.756833251953125
+                      },
+                      {
+                        "word": "and ",
+                        "start": 41.756833251953125,
+                        "end": 42.086
+                      },
+                      {
+                        "word": "Automation ",
+                        "start": 42.086,
+                        "end": 42.18266674804688
+                      },
+                      {
+                        "word": "could ",
+                        "start": 42.18266674804688,
+                        "end": 42.71433325195313
+                      },
+                      {
+                        "word": "help ",
+                        "start": 42.71433325195313,
+                        "end": 42.8885
+                      },
+                      {
+                        "word": "your ",
+                        "start": 42.8885,
+                        "end": 43.07266674804688
+                      },
+                      {
+                        "word": "business?",
+                        "start": 43.07266674804688,
+                        "end": 43.1885
+                      },
+                      {
+                        "word": " No ",
+                        "start": 43.87875,
+                        "end": 44.12125
+                      },
+                      {
+                        "word": "jargon, ",
+                        "start": 44.12125,
+                        "end": 44.56625
+                      },
+                      {
+                        "word": "No ",
+                        "start": 44.56625,
+                        "end": 44.77875
+                      },
+                      {
+                        "word": "sales ",
+                        "start": 44.77875,
+                        "end": 45.07875
+                      },
+                      {
+                        "word": "tactics, ",
+                        "start": 45.07875,
+                        "end": 45.54291674804688
+                      },
+                      {
+                        "word": "just ",
+                        "start": 45.54291674804688,
+                        "end": 45.85291674804687
+                      },
+                      {
+                        "word": "real ",
+                        "start": 45.85291674804687,
+                        "end": 46.05625
+                      },
+                      {
+                        "word": "results.",
+                        "start": 46.05625,
+                        "end": 46.74291674804687
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 8
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Okay. Sounds good. Yep.",
+                    "words": [
+                      {
+                        "word": "Okay. ",
+                        "start": 47.796,
+                        "end": 48.196
+                      },
+                      {
+                        "word": "Sounds ",
+                        "start": 48.196,
+                        "end": 48.516
+                      },
+                      {
+                        "word": "good. ",
+                        "start": 48.516,
+                        "end": 48.756
+                      },
+                      {
+                        "word": "Yep.",
+                        "start": 48.756,
+                        "end": 48.916
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "What day and time work best for you?",
+                    "words": [
+                      {
+                        "word": "What ",
+                        "start": 50.807333251953125,
+                        "end": 51.01066674804687
+                      },
+                      {
+                        "word": "day ",
+                        "start": 51.01066674804687,
+                        "end": 51.17566674804687
+                      },
+                      {
+                        "word": "and ",
+                        "start": 51.17566674804687,
+                        "end": 51.2815
+                      },
+                      {
+                        "word": "time ",
+                        "start": 51.2815,
+                        "end": 51.514
+                      },
+                      {
+                        "word": "work ",
+                        "start": 51.514,
+                        "end": 51.71733325195312
+                      },
+                      {
+                        "word": "best ",
+                        "start": 51.71733325195312,
+                        "end": 51.91066674804687
+                      },
+                      {
+                        "word": "for ",
+                        "start": 51.91066674804687,
+                        "end": 52.0465
+                      },
+                      {
+                        "word": "you?",
+                        "start": 52.0465,
+                        "end": 52.4715
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 10
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Monday, the eighth of December, at ten thirty AM.",
+                    "words": [
+                      {
+                        "word": "Monday, ",
+                        "start": 54.296,
+                        "end": 55.256
+                      },
+                      {
+                        "word": "the ",
+                        "start": 55.496,
+                        "end": 55.816
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 55.816,
+                        "end": 56.136
+                      },
+                      {
+                        "word": "of ",
+                        "start": 56.136,
+                        "end": 56.376003
+                      },
+                      {
+                        "word": "December, ",
+                        "start": 56.376003,
+                        "end": 56.856002000000004
+                      },
+                      {
+                        "word": "at ",
+                        "start": 57.526,
+                        "end": 57.846000000000004
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 57.936,
+                        "end": 58.256
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 58.256,
+                        "end": 58.496
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 58.496,
+                        "end": 58.816
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Let ",
+                    "words": [
+                      {
+                        "word": "Let ",
+                        "start": 61.44333325195313,
+                        "end": 61.588333251953124
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "agent",
+                    "content": "me check our calendar for Monday, the eighth ",
+                    "words": [
+                      {
+                        "word": "me ",
+                        "start": 61.588333251953124,
+                        "end": 61.685
+                      },
+                      {
+                        "word": "check ",
+                        "start": 61.685,
+                        "end": 61.88833325195313
+                      },
+                      {
+                        "word": "our ",
+                        "start": 61.88833325195313,
+                        "end": 62.014166748046875
+                      },
+                      {
+                        "word": "calendar ",
+                        "start": 62.014166748046875,
+                        "end": 62.32416674804688
+                      },
+                      {
+                        "word": "for ",
+                        "start": 62.32416674804688,
+                        "end": 62.44916674804688
+                      },
+                      {
+                        "word": "Monday, ",
+                        "start": 62.44916674804688,
+                        "end": 62.74
+                      },
+                      {
+                        "word": "the ",
+                        "start": 62.74,
+                        "end": 62.85583325195312
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 62.85583325195312,
+                        "end": 63.1075
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "agent",
+                    "content": "of December, at ten thirty AM.The time you requested, ",
+                    "words": [
+                      {
+                        "word": "of ",
+                        "start": 63.1075,
+                        "end": 63.194166748046875
+                      },
+                      {
+                        "word": "December, ",
+                        "start": 63.194166748046875,
+                        "end": 63.64916674804687
+                      },
+                      {
+                        "word": "at ",
+                        "start": 63.64916674804687,
+                        "end": 63.813333251953125
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 63.813333251953125,
+                        "end": 64.0075
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 64.0075,
+                        "end": 64.27833325195313
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 64.27833325195313,
+                        "end": 64.83916674804688
+                      },
+                      {
+                        "word": "The ",
+                        "start": 64.88720825195313,
+                        "end": 65.071375
+                      },
+                      {
+                        "word": "time ",
+                        "start": 65.071375,
+                        "end": 65.32304174804688
+                      },
+                      {
+                        "word": "you ",
+                        "start": 65.32304174804688,
+                        "end": 65.45804174804688
+                      },
+                      {
+                        "word": "requested, ",
+                        "start": 65.45804174804688,
+                        "end": 66.038875
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Monday, the eighth of December at ten thirty AM, is available. I will book that for you now.I have booked your free 30 minute discovery call for Monday, the eighth of December at ten thirty AM. Thanks for your time bob. Is there anything else I can help you with today?",
+                    "words": [
+                      {
+                        "word": "Monday, ",
+                        "start": 66.038875,
+                        "end": 66.51304174804687
+                      },
+                      {
+                        "word": "the ",
+                        "start": 66.51304174804687,
+                        "end": 66.64804174804688
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 66.64804174804688,
+                        "end": 66.851375
+                      },
+                      {
+                        "word": "of ",
+                        "start": 66.851375,
+                        "end": 66.928875
+                      },
+                      {
+                        "word": "December ",
+                        "start": 66.928875,
+                        "end": 67.35470825195313
+                      },
+                      {
+                        "word": "at ",
+                        "start": 67.35470825195313,
+                        "end": 67.49054174804688
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 67.49054174804688,
+                        "end": 67.683875
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 67.683875,
+                        "end": 67.94470825195313
+                      },
+                      {
+                        "word": "AM, ",
+                        "start": 67.94470825195313,
+                        "end": 68.25470825195312
+                      },
+                      {
+                        "word": "is ",
+                        "start": 68.25470825195312,
+                        "end": 68.408875
+                      },
+                      {
+                        "word": "available.",
+                        "start": 68.408875,
+                        "end": 69.06720825195312
+                      },
+                      {
+                        "word": " I ",
+                        "start": 69.08070825195313,
+                        "end": 69.19654174804687
+                      },
+                      {
+                        "word": "will ",
+                        "start": 69.19654174804687,
+                        "end": 69.34154174804688
+                      },
+                      {
+                        "word": "book ",
+                        "start": 69.34154174804688,
+                        "end": 69.477375
+                      },
+                      {
+                        "word": "that ",
+                        "start": 69.477375,
+                        "end": 69.612375
+                      },
+                      {
+                        "word": "for ",
+                        "start": 69.612375,
+                        "end": 69.73820825195313
+                      },
+                      {
+                        "word": "you ",
+                        "start": 69.73820825195313,
+                        "end": 69.86404174804687
+                      },
+                      {
+                        "word": "now.",
+                        "start": 69.86404174804687,
+                        "end": 70.30904174804688
+                      },
+                      {
+                        "word": "I ",
+                        "start": 70.35308325195312,
+                        "end": 70.46975
+                      },
+                      {
+                        "word": "have ",
+                        "start": 70.46975,
+                        "end": 70.64391674804688
+                      },
+                      {
+                        "word": "booked ",
+                        "start": 70.64391674804688,
+                        "end": 70.88558325195312
+                      },
+                      {
+                        "word": "your ",
+                        "start": 70.88558325195312,
+                        "end": 71.05975
+                      },
+                      {
+                        "word": "free ",
+                        "start": 71.05975,
+                        "end": 71.36891674804687
+                      },
+                      {
+                        "word": "30 ",
+                        "start": 71.36891674804687,
+                        "end": 71.68891674804688
+                      },
+                      {
+                        "word": "minute ",
+                        "start": 71.68891674804688,
+                        "end": 71.91141674804688
+                      },
+                      {
+                        "word": "discovery ",
+                        "start": 71.91141674804688,
+                        "end": 72.33641674804687
+                      },
+                      {
+                        "word": "call ",
+                        "start": 72.33641674804687,
+                        "end": 72.59808325195313
+                      },
+                      {
+                        "word": "for ",
+                        "start": 72.59808325195313,
+                        "end": 72.78225
+                      },
+                      {
+                        "word": "Monday, ",
+                        "start": 72.78225,
+                        "end": 73.16891674804687
+                      },
+                      {
+                        "word": "the ",
+                        "start": 73.16891674804687,
+                        "end": 73.30391674804687
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 73.30391674804687,
+                        "end": 73.61391674804688
+                      },
+                      {
+                        "word": "of ",
+                        "start": 73.61391674804688,
+                        "end": 73.73975
+                      },
+                      {
+                        "word": "December ",
+                        "start": 73.73975,
+                        "end": 74.17475
+                      },
+                      {
+                        "word": "at ",
+                        "start": 74.17475,
+                        "end": 74.35891674804688
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 74.35891674804688,
+                        "end": 74.62975
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 74.62975,
+                        "end": 74.98808325195313
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 74.98808325195313,
+                        "end": 75.61641674804687
+                      },
+                      {
+                        "word": " Thanks ",
+                        "start": 75.651125,
+                        "end": 75.92279174804688
+                      },
+                      {
+                        "word": "for ",
+                        "start": 75.92279174804688,
+                        "end": 76.028625
+                      },
+                      {
+                        "word": "your ",
+                        "start": 76.028625,
+                        "end": 76.14529174804687
+                      },
+                      {
+                        "word": "time ",
+                        "start": 76.14529174804687,
+                        "end": 76.38695825195313
+                      },
+                      {
+                        "word": "bob.",
+                        "start": 76.38695825195313,
+                        "end": 76.851125
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 76.88108325195313,
+                        "end": 77.03608325195313
+                      },
+                      {
+                        "word": "there ",
+                        "start": 77.03608325195313,
+                        "end": 77.18108325195313
+                      },
+                      {
+                        "word": "anything ",
+                        "start": 77.18108325195313,
+                        "end": 77.47108325195312
+                      },
+                      {
+                        "word": "else ",
+                        "start": 77.47108325195312,
+                        "end": 77.65525
+                      },
+                      {
+                        "word": "I ",
+                        "start": 77.65525,
+                        "end": 77.71358325195312
+                      },
+                      {
+                        "word": "can ",
+                        "start": 77.71358325195312,
+                        "end": 77.83941674804687
+                      },
+                      {
+                        "word": "help ",
+                        "start": 77.83941674804687,
+                        "end": 77.98441674804687
+                      },
+                      {
+                        "word": "you ",
+                        "start": 77.98441674804687,
+                        "end": 78.07108325195313
+                      },
+                      {
+                        "word": "with ",
+                        "start": 78.07108325195313,
+                        "end": 78.23608325195312
+                      },
+                      {
+                        "word": "today?",
+                        "start": 78.23608325195312,
+                        "end": 78.75858325195313
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "All good.",
+                    "words": [
+                      {
+                        "word": "All ",
+                        "start": 80.346,
+                        "end": 80.665996
+                      },
+                      {
+                        "word": "good.",
+                        "start": 80.665996,
+                        "end": 80.905994
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Looking forward to the conversation. Have a good day!",
+                    "words": [
+                      {
+                        "word": "Looking ",
+                        "start": 82.25833325195312,
+                        "end": 82.51
+                      },
+                      {
+                        "word": "forward ",
+                        "start": 82.51,
+                        "end": 82.72333325195312
+                      },
+                      {
+                        "word": "to ",
+                        "start": 82.72333325195312,
+                        "end": 82.80083325195312
+                      },
+                      {
+                        "word": "the ",
+                        "start": 82.80083325195312,
+                        "end": 82.8775
+                      },
+                      {
+                        "word": "conversation. ",
+                        "start": 82.8775,
+                        "end": 83.69083325195312
+                      },
+                      {
+                        "word": "Have ",
+                        "start": 83.73445825195313,
+                        "end": 83.93779174804688
+                      },
+                      {
+                        "word": "a ",
+                        "start": 83.93779174804688,
+                        "end": 83.99529174804688
+                      },
+                      {
+                        "word": "good ",
+                        "start": 83.99529174804688,
+                        "end": 84.121125
+                      },
+                      {
+                        "word": "day!",
+                        "start": 84.121125,
+                        "end": 84.55695825195312
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 13
+                    }
+                  }
+                ],
+                "transcript_with_tool_calls": [
+                  {
+                    "role": "user",
+                    "content": "Hello. Who's speaking?",
+                    "words": [
+                      {
+                        "word": "Hello. ",
+                        "start": 1.526,
+                        "end": 1.926
+                      },
+                      {
+                        "word": "Who's ",
+                        "start": 1.926,
+                        "end": 2.1659998
+                      },
+                      {
+                        "word": "speaking?",
+                        "start": 2.1659998,
+                        "end": 2.4859999999999998
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hi, am I speaking with bob?",
+                    "words": [
+                      {
+                        "word": "Hi, ",
+                        "start": 4.257333251953125,
+                        "end": 4.624833251953125
+                      },
+                      {
+                        "word": "am ",
+                        "start": 4.624833251953125,
+                        "end": 4.799
+                      },
+                      {
+                        "word": "I ",
+                        "start": 4.799,
+                        "end": 4.8765
+                      },
+                      {
+                        "word": "speaking ",
+                        "start": 4.8765,
+                        "end": 5.1665
+                      },
+                      {
+                        "word": "with ",
+                        "start": 5.1665,
+                        "end": 5.302333251953125
+                      },
+                      {
+                        "word": "bob?",
+                        "start": 5.302333251953125,
+                        "end": 5.747333251953125
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 2
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes.",
+                    "words": [
+                      {
+                        "word": "Yes.",
+                        "start": 7.325999700000001,
+                        "end": 8.766
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Hello bob, this is Sarah from Amplify Automation. I am an AI voice assistant, I'm following up on your enquiry from our website regarding the challenges you've been facing in your business. Is now a good time to talk?",
+                    "words": [
+                      {
+                        "word": "Hello ",
+                        "start": 9.686333251953124,
+                        "end": 9.976333251953125
+                      },
+                      {
+                        "word": "bob, ",
+                        "start": 9.976333251953125,
+                        "end": 10.218
+                      },
+                      {
+                        "word": "this ",
+                        "start": 10.218,
+                        "end": 10.383
+                      },
+                      {
+                        "word": "is ",
+                        "start": 10.383,
+                        "end": 10.498833251953124
+                      },
+                      {
+                        "word": "Sarah ",
+                        "start": 10.498833251953124,
+                        "end": 10.818
+                      },
+                      {
+                        "word": "from ",
+                        "start": 10.818,
+                        "end": 11.011333251953126
+                      },
+                      {
+                        "word": "Amplify ",
+                        "start": 11.011333251953126,
+                        "end": 11.447166748046875
+                      },
+                      {
+                        "word": "Automation.",
+                        "start": 11.447166748046875,
+                        "end": 12.201333251953125
+                      },
+                      {
+                        "word": " I ",
+                        "start": 12.226791748046875,
+                        "end": 12.400958251953124
+                      },
+                      {
+                        "word": "am ",
+                        "start": 12.400958251953124,
+                        "end": 12.526791748046875
+                      },
+                      {
+                        "word": "an ",
+                        "start": 12.526791748046875,
+                        "end": 12.642625
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 12.642625,
+                        "end": 13.039291748046875
+                      },
+                      {
+                        "word": "voice ",
+                        "start": 13.039291748046875,
+                        "end": 13.271791748046875
+                      },
+                      {
+                        "word": "assistant, ",
+                        "start": 13.271791748046875,
+                        "end": 13.890958251953125
+                      },
+                      {
+                        "word": "I'm ",
+                        "start": 13.890958251953125,
+                        "end": 14.104291748046874
+                      },
+                      {
+                        "word": "following ",
+                        "start": 14.104291748046874,
+                        "end": 14.500958251953126
+                      },
+                      {
+                        "word": "up ",
+                        "start": 14.500958251953126,
+                        "end": 14.675125
+                      },
+                      {
+                        "word": "on ",
+                        "start": 14.675125,
+                        "end": 14.800125
+                      },
+                      {
+                        "word": "your ",
+                        "start": 14.800125,
+                        "end": 14.955125
+                      },
+                      {
+                        "word": "enquiry ",
+                        "start": 14.955125,
+                        "end": 15.545125
+                      },
+                      {
+                        "word": "from ",
+                        "start": 15.545125,
+                        "end": 15.767625
+                      },
+                      {
+                        "word": "our ",
+                        "start": 15.767625,
+                        "end": 15.951791748046874
+                      },
+                      {
+                        "word": "website ",
+                        "start": 15.951791748046874,
+                        "end": 16.658458251953125
+                      },
+                      {
+                        "word": "regarding ",
+                        "start": 16.658458251953125,
+                        "end": 17.131791748046876
+                      },
+                      {
+                        "word": "the ",
+                        "start": 17.131791748046876,
+                        "end": 17.219291748046874
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 17.219291748046874,
+                        "end": 17.712625
+                      },
+                      {
+                        "word": "you've ",
+                        "start": 17.712625,
+                        "end": 17.896791748046876
+                      },
+                      {
+                        "word": "been ",
+                        "start": 17.896791748046876,
+                        "end": 18.080125
+                      },
+                      {
+                        "word": "facing ",
+                        "start": 18.080125,
+                        "end": 18.476791748046875
+                      },
+                      {
+                        "word": "in ",
+                        "start": 18.476791748046875,
+                        "end": 18.564291748046877
+                      },
+                      {
+                        "word": "your ",
+                        "start": 18.564291748046877,
+                        "end": 18.728458251953125
+                      },
+                      {
+                        "word": "business.",
+                        "start": 18.728458251953125,
+                        "end": 19.444291748046876
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 19.497416748046874,
+                        "end": 19.681583251953125
+                      },
+                      {
+                        "word": "now ",
+                        "start": 19.681583251953125,
+                        "end": 19.826583251953124
+                      },
+                      {
+                        "word": "a ",
+                        "start": 19.826583251953124,
+                        "end": 19.884916748046876
+                      },
+                      {
+                        "word": "good ",
+                        "start": 19.884916748046876,
+                        "end": 20.01075
+                      },
+                      {
+                        "word": "time ",
+                        "start": 20.01075,
+                        "end": 20.16575
+                      },
+                      {
+                        "word": "to ",
+                        "start": 20.16575,
+                        "end": 20.252416748046876
+                      },
+                      {
+                        "word": "talk?",
+                        "start": 20.252416748046876,
+                        "end": 20.697416748046876
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 4
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yeah. Is.",
+                    "words": [
+                      {
+                        "word": "Yeah. ",
+                        "start": 21.445999,
+                        "end": 21.685998
+                      },
+                      {
+                        "word": "Is.",
+                        "start": 21.956,
+                        "end": 22.196
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Perfect, thank you. Can I confirm you are running a business and are interested in how AI can help save you time and money?",
+                    "words": [
+                      {
+                        "word": "Perfect, ",
+                        "start": 25.447333251953125,
+                        "end": 25.844
+                      },
+                      {
+                        "word": "thank ",
+                        "start": 25.844,
+                        "end": 26.0665
+                      },
+                      {
+                        "word": "you.",
+                        "start": 26.0665,
+                        "end": 26.492333251953124
+                      },
+                      {
+                        "word": " Can ",
+                        "start": 26.510166748046874,
+                        "end": 26.732666748046874
+                      },
+                      {
+                        "word": "I ",
+                        "start": 26.732666748046874,
+                        "end": 26.829333251953123
+                      },
+                      {
+                        "word": "confirm ",
+                        "start": 26.829333251953123,
+                        "end": 27.206833251953125
+                      },
+                      {
+                        "word": "you ",
+                        "start": 27.206833251953125,
+                        "end": 27.3035
+                      },
+                      {
+                        "word": "are ",
+                        "start": 27.3035,
+                        "end": 27.400166748046875
+                      },
+                      {
+                        "word": "running ",
+                        "start": 27.400166748046875,
+                        "end": 27.6135
+                      },
+                      {
+                        "word": "a ",
+                        "start": 27.6135,
+                        "end": 27.681
+                      },
+                      {
+                        "word": "business ",
+                        "start": 27.681,
+                        "end": 28.116
+                      },
+                      {
+                        "word": "and ",
+                        "start": 28.116,
+                        "end": 28.281
+                      },
+                      {
+                        "word": "are ",
+                        "start": 28.281,
+                        "end": 28.416
+                      },
+                      {
+                        "word": "interested ",
+                        "start": 28.416,
+                        "end": 28.900166748046875
+                      },
+                      {
+                        "word": "in ",
+                        "start": 28.900166748046875,
+                        "end": 29.016
+                      },
+                      {
+                        "word": "how ",
+                        "start": 29.016,
+                        "end": 29.229333251953125
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 29.229333251953125,
+                        "end": 29.5485
+                      },
+                      {
+                        "word": "can ",
+                        "start": 29.5485,
+                        "end": 29.6935
+                      },
+                      {
+                        "word": "help ",
+                        "start": 29.6935,
+                        "end": 29.886833251953124
+                      },
+                      {
+                        "word": "save ",
+                        "start": 29.886833251953124,
+                        "end": 30.100166748046874
+                      },
+                      {
+                        "word": "you ",
+                        "start": 30.100166748046874,
+                        "end": 30.225166748046874
+                      },
+                      {
+                        "word": "time ",
+                        "start": 30.225166748046874,
+                        "end": 30.457666748046876
+                      },
+                      {
+                        "word": "and ",
+                        "start": 30.457666748046876,
+                        "end": 30.564333251953126
+                      },
+                      {
+                        "word": "money?",
+                        "start": 30.564333251953126,
+                        "end": 31.057666748046874
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 6
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yeah. I am.",
+                    "words": [
+                      {
+                        "word": "Yeah. ",
+                        "start": 32.155998,
+                        "end": 32.396
+                      },
+                      {
+                        "word": "I ",
+                        "start": 32.396,
+                        "end": 32.556
+                      },
+                      {
+                        "word": "am.",
+                        "start": 32.556,
+                        "end": 32.716
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Ok, would you be open to a free, no obligation 30 minute discovery call where we will listen in more detail about the challenges you mentioned and discuss how AI and Automation could help your business? No jargon, No sales tactics, just real results.",
+                    "words": [
+                      {
+                        "word": "Ok, ",
+                        "start": 34.82016674804687,
+                        "end": 35.37183325195313
+                      },
+                      {
+                        "word": "would ",
+                        "start": 35.37183325195313,
+                        "end": 35.546
+                      },
+                      {
+                        "word": "you ",
+                        "start": 35.546,
+                        "end": 35.65183325195313
+                      },
+                      {
+                        "word": "be ",
+                        "start": 35.65183325195313,
+                        "end": 35.7585
+                      },
+                      {
+                        "word": "open ",
+                        "start": 35.7585,
+                        "end": 36.01016674804688
+                      },
+                      {
+                        "word": "to ",
+                        "start": 36.01016674804688,
+                        "end": 36.136
+                      },
+                      {
+                        "word": "a ",
+                        "start": 36.136,
+                        "end": 36.26183325195313
+                      },
+                      {
+                        "word": "free, ",
+                        "start": 36.26183325195313,
+                        "end": 36.62933325195313
+                      },
+                      {
+                        "word": "no ",
+                        "start": 36.62933325195313,
+                        "end": 36.774333251953124
+                      },
+                      {
+                        "word": "obligation ",
+                        "start": 36.774333251953124,
+                        "end": 37.2585
+                      },
+                      {
+                        "word": "30 ",
+                        "start": 37.2585,
+                        "end": 37.50933325195312
+                      },
+                      {
+                        "word": "minute ",
+                        "start": 37.50933325195312,
+                        "end": 37.722666748046876
+                      },
+                      {
+                        "word": "discovery ",
+                        "start": 37.722666748046876,
+                        "end": 38.1385
+                      },
+                      {
+                        "word": "call ",
+                        "start": 38.1385,
+                        "end": 38.40016674804688
+                      },
+                      {
+                        "word": "where ",
+                        "start": 38.40016674804688,
+                        "end": 38.554333251953125
+                      },
+                      {
+                        "word": "we ",
+                        "start": 38.554333251953125,
+                        "end": 38.622666748046875
+                      },
+                      {
+                        "word": "will ",
+                        "start": 38.622666748046875,
+                        "end": 38.77683325195313
+                      },
+                      {
+                        "word": "listen ",
+                        "start": 38.77683325195313,
+                        "end": 39.0285
+                      },
+                      {
+                        "word": "in ",
+                        "start": 39.0285,
+                        "end": 39.12516674804687
+                      },
+                      {
+                        "word": "more ",
+                        "start": 39.12516674804687,
+                        "end": 39.3385
+                      },
+                      {
+                        "word": "detail ",
+                        "start": 39.3385,
+                        "end": 39.715166748046876
+                      },
+                      {
+                        "word": "about ",
+                        "start": 39.715166748046876,
+                        "end": 39.94766674804688
+                      },
+                      {
+                        "word": "the ",
+                        "start": 39.94766674804688,
+                        "end": 40.035166748046876
+                      },
+                      {
+                        "word": "challenges ",
+                        "start": 40.035166748046876,
+                        "end": 40.48933325195313
+                      },
+                      {
+                        "word": "you ",
+                        "start": 40.48933325195313,
+                        "end": 40.62516674804687
+                      },
+                      {
+                        "word": "mentioned ",
+                        "start": 40.62516674804687,
+                        "end": 40.982666748046874
+                      },
+                      {
+                        "word": "and ",
+                        "start": 40.982666748046874,
+                        "end": 41.060166748046875
+                      },
+                      {
+                        "word": "discuss ",
+                        "start": 41.060166748046875,
+                        "end": 41.22433325195313
+                      },
+                      {
+                        "word": "how ",
+                        "start": 41.22433325195313,
+                        "end": 41.582666748046876
+                      },
+                      {
+                        "word": "AI ",
+                        "start": 41.582666748046876,
+                        "end": 41.756833251953125
+                      },
+                      {
+                        "word": "and ",
+                        "start": 41.756833251953125,
+                        "end": 42.086
+                      },
+                      {
+                        "word": "Automation ",
+                        "start": 42.086,
+                        "end": 42.18266674804688
+                      },
+                      {
+                        "word": "could ",
+                        "start": 42.18266674804688,
+                        "end": 42.71433325195313
+                      },
+                      {
+                        "word": "help ",
+                        "start": 42.71433325195313,
+                        "end": 42.8885
+                      },
+                      {
+                        "word": "your ",
+                        "start": 42.8885,
+                        "end": 43.07266674804688
+                      },
+                      {
+                        "word": "business?",
+                        "start": 43.07266674804688,
+                        "end": 43.1885
+                      },
+                      {
+                        "word": " No ",
+                        "start": 43.87875,
+                        "end": 44.12125
+                      },
+                      {
+                        "word": "jargon, ",
+                        "start": 44.12125,
+                        "end": 44.56625
+                      },
+                      {
+                        "word": "No ",
+                        "start": 44.56625,
+                        "end": 44.77875
+                      },
+                      {
+                        "word": "sales ",
+                        "start": 44.77875,
+                        "end": 45.07875
+                      },
+                      {
+                        "word": "tactics, ",
+                        "start": 45.07875,
+                        "end": 45.54291674804688
+                      },
+                      {
+                        "word": "just ",
+                        "start": 45.54291674804688,
+                        "end": 45.85291674804687
+                      },
+                      {
+                        "word": "real ",
+                        "start": 45.85291674804687,
+                        "end": 46.05625
+                      },
+                      {
+                        "word": "results.",
+                        "start": 46.05625,
+                        "end": 46.74291674804687
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 8
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Okay. Sounds good. Yep.",
+                    "words": [
+                      {
+                        "word": "Okay. ",
+                        "start": 47.796,
+                        "end": 48.196
+                      },
+                      {
+                        "word": "Sounds ",
+                        "start": 48.196,
+                        "end": 48.516
+                      },
+                      {
+                        "word": "good. ",
+                        "start": 48.516,
+                        "end": 48.756
+                      },
+                      {
+                        "word": "Yep.",
+                        "start": 48.756,
+                        "end": 48.916
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "What day and time work best for you?",
+                    "words": [
+                      {
+                        "word": "What ",
+                        "start": 50.807333251953125,
+                        "end": 51.01066674804687
+                      },
+                      {
+                        "word": "day ",
+                        "start": 51.01066674804687,
+                        "end": 51.17566674804687
+                      },
+                      {
+                        "word": "and ",
+                        "start": 51.17566674804687,
+                        "end": 51.2815
+                      },
+                      {
+                        "word": "time ",
+                        "start": 51.2815,
+                        "end": 51.514
+                      },
+                      {
+                        "word": "work ",
+                        "start": 51.514,
+                        "end": 51.71733325195312
+                      },
+                      {
+                        "word": "best ",
+                        "start": 51.71733325195312,
+                        "end": 51.91066674804687
+                      },
+                      {
+                        "word": "for ",
+                        "start": 51.91066674804687,
+                        "end": 52.0465
+                      },
+                      {
+                        "word": "you?",
+                        "start": 52.0465,
+                        "end": 52.4715
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 10
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "Monday, the eighth of December, at ten thirty AM.",
+                    "words": [
+                      {
+                        "word": "Monday, ",
+                        "start": 54.296,
+                        "end": 55.256
+                      },
+                      {
+                        "word": "the ",
+                        "start": 55.496,
+                        "end": 55.816
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 55.816,
+                        "end": 56.136
+                      },
+                      {
+                        "word": "of ",
+                        "start": 56.136,
+                        "end": 56.376003
+                      },
+                      {
+                        "word": "December, ",
+                        "start": 56.376003,
+                        "end": 56.856002000000004
+                      },
+                      {
+                        "word": "at ",
+                        "start": 57.526,
+                        "end": 57.846000000000004
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 57.936,
+                        "end": 58.256
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 58.256,
+                        "end": 58.496
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 58.496,
+                        "end": 58.816
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "1c647136ac9d5401",
+                    "name": "check_calendar_availability",
+                    "arguments": "{\"start_time\":\"2025-12-08T10:30:00\",\"end_time\":\"2025-12-08T11:00:00\",\"execution_message\":\"Let me check our calendar for Monday, the eighth of December, at ten thirty AM.\"}",
+                    "time_sec": 60.979,
+                    "type": "check_availability_cal"
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Let ",
+                    "words": [
+                      {
+                        "word": "Let ",
+                        "start": 61.44333325195313,
+                        "end": 61.588333251953124
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "tool_call_result",
+                    "tool_call_id": "1c647136ac9d5401",
+                    "content": "{\"availability_for_selected_time\":[{\"date\":\"Monday, 2025 December 12/8/2025 Australian Eastern Standard Time\",\"availability_range\":[\"From 10:30 AM to 11:00 AM\"]}]}",
+                    "time_sec": 61.556
+                  },
+                  {
+                    "role": "agent",
+                    "content": "me check our calendar for Monday, the eighth ",
+                    "words": [
+                      {
+                        "word": "me ",
+                        "start": 61.588333251953124,
+                        "end": 61.685
+                      },
+                      {
+                        "word": "check ",
+                        "start": 61.685,
+                        "end": 61.88833325195313
+                      },
+                      {
+                        "word": "our ",
+                        "start": 61.88833325195313,
+                        "end": 62.014166748046875
+                      },
+                      {
+                        "word": "calendar ",
+                        "start": 62.014166748046875,
+                        "end": 62.32416674804688
+                      },
+                      {
+                        "word": "for ",
+                        "start": 62.32416674804688,
+                        "end": 62.44916674804688
+                      },
+                      {
+                        "word": "Monday, ",
+                        "start": 62.44916674804688,
+                        "end": 62.74
+                      },
+                      {
+                        "word": "the ",
+                        "start": 62.74,
+                        "end": 62.85583325195312
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 62.85583325195312,
+                        "end": 63.1075
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "5a3b3e47ea56409f",
+                    "name": "book_appointment",
+                    "arguments": "{\"time\":\"2025-12-08T10:30:00\",\"name\":\"bob\",\"email\":\"bob@down.com\",\"execution_message\":\"I have booked your free 30 minute discovery call for Monday, the eighth of December at ten thirty AM.\"}",
+                    "time_sec": 63.047,
+                    "type": "book_appointment_cal"
+                  },
+                  {
+                    "role": "agent",
+                    "content": "of December, at ten thirty AM.The time you requested, ",
+                    "words": [
+                      {
+                        "word": "of ",
+                        "start": 63.1075,
+                        "end": 63.194166748046875
+                      },
+                      {
+                        "word": "December, ",
+                        "start": 63.194166748046875,
+                        "end": 63.64916674804687
+                      },
+                      {
+                        "word": "at ",
+                        "start": 63.64916674804687,
+                        "end": 63.813333251953125
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 63.813333251953125,
+                        "end": 64.0075
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 64.0075,
+                        "end": 64.27833325195313
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 64.27833325195313,
+                        "end": 64.83916674804688
+                      },
+                      {
+                        "word": "The ",
+                        "start": 64.88720825195313,
+                        "end": 65.071375
+                      },
+                      {
+                        "word": "time ",
+                        "start": 65.071375,
+                        "end": 65.32304174804688
+                      },
+                      {
+                        "word": "you ",
+                        "start": 65.32304174804688,
+                        "end": 65.45804174804688
+                      },
+                      {
+                        "word": "requested, ",
+                        "start": 65.45804174804688,
+                        "end": 66.038875
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "tool_call_result",
+                    "tool_call_id": "5a3b3e47ea56409f",
+                    "content": "{\"status\":\"Successfully booked an appointment.\"}",
+                    "time_sec": 65.972
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Monday, the eighth of December at ten thirty AM, is available. I will book that for you now.I have booked your free 30 minute discovery call for Monday, the eighth of December at ten thirty AM. Thanks for your time bob. Is there anything else I can help you with today?",
+                    "words": [
+                      {
+                        "word": "Monday, ",
+                        "start": 66.038875,
+                        "end": 66.51304174804687
+                      },
+                      {
+                        "word": "the ",
+                        "start": 66.51304174804687,
+                        "end": 66.64804174804688
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 66.64804174804688,
+                        "end": 66.851375
+                      },
+                      {
+                        "word": "of ",
+                        "start": 66.851375,
+                        "end": 66.928875
+                      },
+                      {
+                        "word": "December ",
+                        "start": 66.928875,
+                        "end": 67.35470825195313
+                      },
+                      {
+                        "word": "at ",
+                        "start": 67.35470825195313,
+                        "end": 67.49054174804688
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 67.49054174804688,
+                        "end": 67.683875
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 67.683875,
+                        "end": 67.94470825195313
+                      },
+                      {
+                        "word": "AM, ",
+                        "start": 67.94470825195313,
+                        "end": 68.25470825195312
+                      },
+                      {
+                        "word": "is ",
+                        "start": 68.25470825195312,
+                        "end": 68.408875
+                      },
+                      {
+                        "word": "available.",
+                        "start": 68.408875,
+                        "end": 69.06720825195312
+                      },
+                      {
+                        "word": " I ",
+                        "start": 69.08070825195313,
+                        "end": 69.19654174804687
+                      },
+                      {
+                        "word": "will ",
+                        "start": 69.19654174804687,
+                        "end": 69.34154174804688
+                      },
+                      {
+                        "word": "book ",
+                        "start": 69.34154174804688,
+                        "end": 69.477375
+                      },
+                      {
+                        "word": "that ",
+                        "start": 69.477375,
+                        "end": 69.612375
+                      },
+                      {
+                        "word": "for ",
+                        "start": 69.612375,
+                        "end": 69.73820825195313
+                      },
+                      {
+                        "word": "you ",
+                        "start": 69.73820825195313,
+                        "end": 69.86404174804687
+                      },
+                      {
+                        "word": "now.",
+                        "start": 69.86404174804687,
+                        "end": 70.30904174804688
+                      },
+                      {
+                        "word": "I ",
+                        "start": 70.35308325195312,
+                        "end": 70.46975
+                      },
+                      {
+                        "word": "have ",
+                        "start": 70.46975,
+                        "end": 70.64391674804688
+                      },
+                      {
+                        "word": "booked ",
+                        "start": 70.64391674804688,
+                        "end": 70.88558325195312
+                      },
+                      {
+                        "word": "your ",
+                        "start": 70.88558325195312,
+                        "end": 71.05975
+                      },
+                      {
+                        "word": "free ",
+                        "start": 71.05975,
+                        "end": 71.36891674804687
+                      },
+                      {
+                        "word": "30 ",
+                        "start": 71.36891674804687,
+                        "end": 71.68891674804688
+                      },
+                      {
+                        "word": "minute ",
+                        "start": 71.68891674804688,
+                        "end": 71.91141674804688
+                      },
+                      {
+                        "word": "discovery ",
+                        "start": 71.91141674804688,
+                        "end": 72.33641674804687
+                      },
+                      {
+                        "word": "call ",
+                        "start": 72.33641674804687,
+                        "end": 72.59808325195313
+                      },
+                      {
+                        "word": "for ",
+                        "start": 72.59808325195313,
+                        "end": 72.78225
+                      },
+                      {
+                        "word": "Monday, ",
+                        "start": 72.78225,
+                        "end": 73.16891674804687
+                      },
+                      {
+                        "word": "the ",
+                        "start": 73.16891674804687,
+                        "end": 73.30391674804687
+                      },
+                      {
+                        "word": "eighth ",
+                        "start": 73.30391674804687,
+                        "end": 73.61391674804688
+                      },
+                      {
+                        "word": "of ",
+                        "start": 73.61391674804688,
+                        "end": 73.73975
+                      },
+                      {
+                        "word": "December ",
+                        "start": 73.73975,
+                        "end": 74.17475
+                      },
+                      {
+                        "word": "at ",
+                        "start": 74.17475,
+                        "end": 74.35891674804688
+                      },
+                      {
+                        "word": "ten ",
+                        "start": 74.35891674804688,
+                        "end": 74.62975
+                      },
+                      {
+                        "word": "thirty ",
+                        "start": 74.62975,
+                        "end": 74.98808325195313
+                      },
+                      {
+                        "word": "AM.",
+                        "start": 74.98808325195313,
+                        "end": 75.61641674804687
+                      },
+                      {
+                        "word": " Thanks ",
+                        "start": 75.651125,
+                        "end": 75.92279174804688
+                      },
+                      {
+                        "word": "for ",
+                        "start": 75.92279174804688,
+                        "end": 76.028625
+                      },
+                      {
+                        "word": "your ",
+                        "start": 76.028625,
+                        "end": 76.14529174804687
+                      },
+                      {
+                        "word": "time ",
+                        "start": 76.14529174804687,
+                        "end": 76.38695825195313
+                      },
+                      {
+                        "word": "bob.",
+                        "start": 76.38695825195313,
+                        "end": 76.851125
+                      },
+                      {
+                        "word": " Is ",
+                        "start": 76.88108325195313,
+                        "end": 77.03608325195313
+                      },
+                      {
+                        "word": "there ",
+                        "start": 77.03608325195313,
+                        "end": 77.18108325195313
+                      },
+                      {
+                        "word": "anything ",
+                        "start": 77.18108325195313,
+                        "end": 77.47108325195312
+                      },
+                      {
+                        "word": "else ",
+                        "start": 77.47108325195312,
+                        "end": 77.65525
+                      },
+                      {
+                        "word": "I ",
+                        "start": 77.65525,
+                        "end": 77.71358325195312
+                      },
+                      {
+                        "word": "can ",
+                        "start": 77.71358325195312,
+                        "end": 77.83941674804687
+                      },
+                      {
+                        "word": "help ",
+                        "start": 77.83941674804687,
+                        "end": 77.98441674804687
+                      },
+                      {
+                        "word": "you ",
+                        "start": 77.98441674804687,
+                        "end": 78.07108325195313
+                      },
+                      {
+                        "word": "with ",
+                        "start": 78.07108325195313,
+                        "end": 78.23608325195312
+                      },
+                      {
+                        "word": "today?",
+                        "start": 78.23608325195312,
+                        "end": 78.75858325195313
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 12
+                    }
+                  },
+                  {
+                    "role": "user",
+                    "content": "All good.",
+                    "words": [
+                      {
+                        "word": "All ",
+                        "start": 80.346,
+                        "end": 80.665996
+                      },
+                      {
+                        "word": "good.",
+                        "start": 80.665996,
+                        "end": 80.905994
+                      }
+                    ]
+                  },
+                  {
+                    "role": "agent",
+                    "content": "Looking forward to the conversation. Have a good day!",
+                    "words": [
+                      {
+                        "word": "Looking ",
+                        "start": 82.25833325195312,
+                        "end": 82.51
+                      },
+                      {
+                        "word": "forward ",
+                        "start": 82.51,
+                        "end": 82.72333325195312
+                      },
+                      {
+                        "word": "to ",
+                        "start": 82.72333325195312,
+                        "end": 82.80083325195312
+                      },
+                      {
+                        "word": "the ",
+                        "start": 82.80083325195312,
+                        "end": 82.8775
+                      },
+                      {
+                        "word": "conversation. ",
+                        "start": 82.8775,
+                        "end": 83.69083325195312
+                      },
+                      {
+                        "word": "Have ",
+                        "start": 83.73445825195313,
+                        "end": 83.93779174804688
+                      },
+                      {
+                        "word": "a ",
+                        "start": 83.93779174804688,
+                        "end": 83.99529174804688
+                      },
+                      {
+                        "word": "good ",
+                        "start": 83.99529174804688,
+                        "end": 84.121125
+                      },
+                      {
+                        "word": "day!",
+                        "start": 84.121125,
+                        "end": 84.55695825195312
+                      }
+                    ],
+                    "metadata": {
+                      "response_id": 13
+                    }
+                  },
+                  {
+                    "role": "tool_call_invocation",
+                    "tool_call_id": "40f05c29c5dda4fa",
+                    "name": "end_call",
+                    "arguments": "{\"execution_message\":\"Looking forward to the conversation. Have a good day!\"}",
+                    "time_sec": 84.573,
+                    "type": "end_call"
+                  }
+                ],
+                "knowledge_base_retrieved_contents_url": "https://dxc03zgurdly9.cloudfront.net/fce7944f7ffdb4195f63ad2504697d403eec2462d8601fd7ac499849e619bf7e/knowledge_base_retrieved_contents.json",
+                "recording_url": "https://dxc03zgurdly9.cloudfront.net/fce7944f7ffdb4195f63ad2504697d403eec2462d8601fd7ac499849e619bf7e/recording.wav",
+                "recording_multi_channel_url": "https://dxc03zgurdly9.cloudfront.net/fce7944f7ffdb4195f63ad2504697d403eec2462d8601fd7ac499849e619bf7e/recording_multichannel.wav",
+                "public_log_url": "https://dxc03zgurdly9.cloudfront.net/fce7944f7ffdb4195f63ad2504697d403eec2462d8601fd7ac499849e619bf7e/public.log",
+                "disconnection_reason": "agent_hangup",
+                "latency": {
+                  "llm": {
+                    "p50": 884,
+                    "p90": 1309.6999999999998,
+                    "p95": 1585.8499999999995,
+                    "p99": 1806.7699999999998,
+                    "min": 543,
+                    "max": 1862,
+                    "num": 8,
+                    "values": [
+                      543,
+                      1060,
+                      919,
+                      644,
+                      849,
+                      1073,
+                      1862,
+                      696
+                    ]
+                  },
+                  "e2e": {
+                    "p50": 1853,
+                    "p90": 2832.6000000000004,
+                    "p95": 3022.7999999999997,
+                    "p99": 3174.9599999999996,
+                    "min": 417,
+                    "max": 3213,
+                    "num": 7,
+                    "values": [
+                      1713,
+                      417,
+                      3213,
+                      2075,
+                      1853,
+                      2579,
+                      1314.006103515625
+                    ]
+                  },
+                  "tts": {
+                    "p50": 350,
+                    "p90": 510.5999999999999,
+                    "p95": 626.7999999999998,
+                    "p99": 719.7599999999999,
+                    "min": 289,
+                    "max": 743,
+                    "num": 8,
+                    "values": [
+                      324,
+                      319,
+                      406,
+                      289,
+                      743,
+                      376,
+                      411,
+                      297
+                    ]
+                  },
+                  "knowledge_base": {
+                    "p50": 204.5,
+                    "p90": 301.1,
+                    "p95": 308.7,
+                    "p99": 320.93999999999994,
+                    "min": 95,
+                    "max": 324,
+                    "num": 18,
+                    "values": [
+                      99,
+                      95,
+                      96,
+                      102,
+                      175,
+                      144,
+                      299,
+                      324,
+                      268,
+                      234,
+                      154,
+                      149,
+                      150,
+                      235,
+                      237,
+                      306,
+                      246,
+                      260
+                    ]
+                  },
+                  "asr": {
+                    "p50": 20.000300000006973,
+                    "p90": 30.001799999998184,
+                    "p95": 39.99987999999939,
+                    "p99": 40.00127800000264,
+                    "min": 9.996950000000652,
+                    "max": 40.00150000000576,
+                    "num": 31,
+                    "values": [
+                      20,
+                      10,
+                      20,
+                      20,
+                      30.0003999999999,
+                      30.00000000000091,
+                      30,
+                      10.00075999999899,
+                      9.998999999999796,
+                      29.99760000000242,
+                      29.99949999999808,
+                      19.998200000001816,
+                      39.999000000003434,
+                      10.000760000002629,
+                      20.001500000005763,
+                      20.00014999999985,
+                      10.000900000006368,
+                      9.99949999999808,
+                      20.000300000006973,
+                      20.002700000004552,
+                      20.001400000001013,
+                      20,
+                      20.00239999999758,
+                      40.00075999999535,
+                      20.00076000000263,
+                      40.00150000000576,
+                      30.00014999999985,
+                      9.998500000001513,
+                      30.001799999998184,
+                      9.996950000000652,
+                      19.993900000001304
+                    ]
+                  }
+                },
+                "call_cost": {
+                  "product_costs": [
+                    {
+                      "product": "elevenlabs_tts",
+                      "unit_price": 0.1166667,
+                      "cost": 9.9166667
+                    },
+                    {
+                      "product": "gpt_4_1_mini_high_priority",
+                      "unit_price": 0.04,
+                      "cost": 3.4
+                    },
+                    {
+                      "product": "knowledge_base_usage",
+                      "unit_price": 0.0083333,
+                      "cost": 0.7083333
+                    }
+                  ],
+                  "total_duration_seconds": 85,
+                  "total_duration_unit_price": 0.165,
+                  "combined_cost": 14.025
+                },
+                "call_analysis": {
+                  "call_summary": "The agent confirmed the user's interest in AI solutions for their business and successfully scheduled a free 30-minute discovery call for Monday, December 8th at 10:30 AM. The user agreed to the appointment and ended the call positively. The agent concluded the call by thanking the user and confirming the booking.",
+                  "in_voicemail": false,
+                  "user_sentiment": "Positive",
+                  "call_successful": true,
+                  "custom_analysis_data": {}
+                },
+                "data_storage_setting": "everything",
+                "opt_in_signed_url": false,
+                "llm_token_usage": {
+                  "values": [
+                    2739,
+                    2789,
+                    2805,
+                    2805,
+                    2985,
+                    2860,
+                    3133,
+                    3136,
+                    3207,
+                    3209,
+                    2988,
+                    3234,
+                    3389,
+                    3519,
+                    3567
+                  ],
+                  "average": 3091,
+                  "num_requests": 15
+                },
+                "tool_calls": [
+                  {
+                    "tool_call_id": "1c647136ac9d5401",
+                    "name": "check_calendar_availability",
+                    "type": "check_availability_cal",
+                    "start_time_sec": 60.979,
+                    "latency_ms": 576.9999999999982,
+                    "success": false
+                  },
+                  {
+                    "tool_call_id": "5a3b3e47ea56409f",
+                    "name": "book_appointment",
+                    "type": "book_appointment_cal",
+                    "start_time_sec": 63.047,
+                    "latency_ms": 2924.9999999999973,
+                    "success": false
+                  },
+                  {
+                    "tool_call_id": "40f05c29c5dda4fa",
+                    "name": "end_call",
+                    "type": "end_call",
+                    "start_time_sec": 84.573
+                  }
+                ],
+                "from_number": "+61468035416",
+                "to_number": "+61418989181",
+                "direction": "outbound",
+                "telephony_identifier": {
+                  "twilio_call_sid": "CA1d000c6633bb3fd8d58ce987b8830ce3"
+                }
+              }
+            },
+            "webhookUrl": "https://amplifyautomation.app.n8n.cloud/webhook/update-lead-info",
+            "executionMode": "production"
+          }
+        }
+      ]
+    },
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Wait 20 secs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Retell": {
+        "main": [
+          [
+            {
+              "node": "Create or update a record",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call Me Webhook": {
+        "main": [
+          [
+            {
+              "node": "If Valid Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 20 secs": {
+        "main": [
+          [
+            {
+              "node": "Retell",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "If call analyze event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If call analyze event": {
+        "main": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If data is valid": {
+        "main": [
+          [
+            {
+              "node": "Update AirTable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarization Chain": {
+        "main": [
+          [
+            {
+              "node": "If data is valid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Valid Data": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false,
+      "errorWorkflow": "bwSF6UHOOMSb4mEW"
+    },
+    "versionId": "f446d511-7275-4a0b-8486-54fc372229d7",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "8f109cae78f8bb33258a0f6c2230ecd3776524e2b719c5f1b9e0d79272ccd79b"
+    },
+    "id": "LKMexxW34gmaUkRb",
+    "tags": [
+      {
+        "updatedAt": "2025-12-15T11:40:51.694Z",
+        "createdAt": "2025-12-15T11:40:51.694Z",
+        "id": "ccrlq2ZKxy8AzlR2",
+        "name": "DEMO SITE"
+      },
+      {
+        "updatedAt": "2025-10-12T11:05:52.483Z",
+        "createdAt": "2025-10-12T11:05:52.483Z",
+        "id": "zJfi4dTYAQXdyIgs",
+        "name": "Voice AI"
+      }
+    ]
+  }

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LeadDock · Appointment dispatch</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="mast">
+    <div class="brand"><span class="brand-mark">LD</span><div><strong>LeadDock</strong><small>appointment dispatch</small></div></div>
+    <div class="boundary"><span></span> lead intake · qualification · booking</div>
+    <button id="reset" class="quiet">Reset seeded day</button>
+  </header>
+
+  <main>
+    <section class="arrival-section" aria-labelledby="arrivals-title">
+      <div class="section-label"><span>01</span><div><small>ARRIVAL TAPE</small><h1 id="arrivals-title">Route the next qualified lead.</h1></div></div>
+      <div id="arrivals" class="arrival-tape" aria-live="polite"></div>
+    </section>
+
+    <section class="dispatch" aria-label="Appointment dispatch book">
+      <div class="book-head">
+        <div><small>03–05 AUG · EUROPE/VILNIUS</small><h2>Appointment ledger</h2></div>
+        <div class="legend"><span class="dot open"></span>open <span class="dot booked"></span>booked</div>
+      </div>
+      <div class="route-layout">
+        <aside class="selected-slip" id="selected-slip" aria-live="polite">
+          <p class="empty">Select an arrival slip to inspect its qualification and route it.</p>
+        </aside>
+        <div class="timeline" id="timeline"></div>
+        <aside class="receipt-rail">
+          <div class="receipt-head"><small>LIVE RECEIPT TAPE</small><strong id="event-count">0 events</strong></div>
+          <ol id="receipts"></ol>
+        </aside>
+      </div>
+    </section>
+
+    <section class="failure-dock" id="failure-dock" aria-labelledby="failure-title">
+      <div><small>RECOVERY POCKET</small><h2 id="failure-title">Dead letters</h2></div>
+      <div id="dead-letters"><p>No unresolved handoffs.</p></div>
+    </section>
+  </main>
+
+  <div id="notice" role="status" aria-live="polite"></div>
+  <script src="./browser-data.js" defer></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>

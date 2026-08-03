@@ -1,0 +1,95 @@
+{
+  "id": "LeadDockMRE001",
+  "name": "LeadDock - deterministic lead intake and booking",
+  "nodes": [
+    {
+      "id": "lead-webhook",
+      "name": "Lead intake webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-760, -160],
+      "parameters": {"httpMethod": "POST", "path": "leaddock/intake", "responseMode": "responseNode", "options": {}}
+    },
+    {
+      "id": "normalize",
+      "name": "Normalize + validate lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-520, -160],
+      "parameters": {"jsCode": "const x = $json.body ?? $json; const required = ['name','email','company','need','budget','company_size','timezone']; const missing = required.filter(k => x[k] === undefined || x[k] === ''); if (missing.length) throw new Error(`missing required fields: ${missing.join(', ')}`); return [{json: {...x, email: String(x.email).trim().toLowerCase(), budget: Number(x.budget), company_size: Number(x.company_size), source: 'n8n-webhook'}}];"}
+    },
+    {
+      "id": "intake-api",
+      "name": "LeadDock intake contract",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-270, -160],
+      "parameters": {"method": "POST", "url": "={{ $env.LEADDOCK_URL || 'http://host.docker.internal:4310' }}/api/leads", "sendBody": true, "contentType": "raw", "rawContentType": "application/json", "body": "={{ JSON.stringify($json) }}", "options": {}}
+    },
+    {
+      "id": "approval-branch",
+      "name": "Needs approval?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-20, -160],
+      "parameters": {"conditions": {"options": {"caseSensitive": true}, "conditions": [{"leftValue": "={{ $json.lead.status }}", "rightValue": "needs_approval", "operator": {"type": "string", "operation": "equals"}}], "combinator": "and"}}
+    },
+    {
+      "id": "pending-response",
+      "name": "Return approval receipt",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [230, -240],
+      "parameters": {"respondWith": "json", "responseBody": "={{ {accepted: true, lead_id: $json.lead.id, status: $json.lead.status, score: $json.lead.qualification.score} }}", "options": {"responseCode": 202}}
+    },
+    {
+      "id": "nurture-response",
+      "name": "Return nurture receipt",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [230, -70],
+      "parameters": {"respondWith": "json", "responseBody": "={{ {accepted: true, lead_id: $json.lead.id, status: 'nurture'} }}", "options": {"responseCode": 202}}
+    },
+    {
+      "id": "approval-webhook",
+      "name": "Approval webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-520, 210],
+      "parameters": {"httpMethod": "POST", "path": "leaddock/approve", "responseMode": "responseNode", "options": {}}
+    },
+    {
+      "id": "approve-api",
+      "name": "CRM + booking + handoff contract",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-250, 210],
+      "parameters": {"method": "POST", "url": "={{ ($env.LEADDOCK_URL || 'http://host.docker.internal:4310') + '/api/leads/' + $json.body.lead_id + '/approve' }}", "sendBody": true, "contentType": "raw", "rawContentType": "application/json", "body": "={{ JSON.stringify({slot_start: $json.body.slot_start}) }}", "options": {}}
+    },
+    {
+      "id": "booking-response",
+      "name": "Return booking receipt",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [20, 210],
+      "parameters": {"respondWith": "json", "responseBody": "={{ {lead_id: $json.lead.id, booking: $json.lead.booking, crm: $json.lead.crm, handoff: $json.lead.handoff, replayed: $json.replayed} }}", "options": {}}
+    }
+  ],
+  "connections": {
+    "Lead intake webhook": {"main": [[{"node": "Normalize + validate lead", "type": "main", "index": 0}]]},
+    "Normalize + validate lead": {"main": [[{"node": "LeadDock intake contract", "type": "main", "index": 0}]]},
+    "LeadDock intake contract": {"main": [[{"node": "Needs approval?", "type": "main", "index": 0}]]},
+    "Needs approval?": {"main": [[{"node": "Return approval receipt", "type": "main", "index": 0}], [{"node": "Return nurture receipt", "type": "main", "index": 0}]]},
+    "Approval webhook": {"main": [[{"node": "CRM + booking + handoff contract", "type": "main", "index": 0}]]},
+    "CRM + booking + handoff contract": {"main": [[{"node": "Return booking receipt", "type": "main", "index": 0}]]}
+  },
+  "pinData": {},
+  "settings": {"executionOrder": "v1", "timezone": "Europe/Vilnius"},
+  "meta": {
+    "foundation": "AmplifyAutomation/n8n-templates@01383a9419a1b72cff553ec887501b9d82907be9",
+    "adaptedFrom": ["speed-to-lead/n8n-contact-form-to-instant-response.json", "chatbots/basic-website-chatbot.json"],
+    "boundary": "Provider-neutral local contracts; no named SaaS support claim"
+  },
+  "active": false,
+  "versionId": "6ee24443-92ce-46ac-b5ff-63542f5fa0e4"
+}

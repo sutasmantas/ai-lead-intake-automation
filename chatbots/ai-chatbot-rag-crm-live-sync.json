@@ -1,0 +1,966 @@
+{
+    "name": "DEMO AI Agent Chatbot - RAG + CRM",
+    "nodes": [
+      {
+        "parameters": {
+          "options": {
+            "maxTokens": 500,
+            "temperature": 0.7
+          }
+        },
+        "id": "openai1",
+        "name": "OpenAI Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          192,
+          1120
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Edit Fields').item.json.session_id }}",
+          "contextWindowLength": 10
+        },
+        "id": "memory1",
+        "name": "Chat Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          320,
+          1120
+        ]
+      },
+      {
+        "parameters": {
+          "public": true,
+          "mode": "webhook",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          -384,
+          896
+        ],
+        "id": "c6329032-5838-4e52-8ffc-df55cf4ba70f",
+        "name": "When chat message received",
+        "webhookId": "42ca3de0-07e9-47c5-89f4-a153b280af4e"
+      },
+      {
+        "parameters": {
+          "mode": "insert",
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "bright-spark-faq",
+            "mode": "list",
+            "cachedResultName": "bright-spark-faq"
+          },
+          "options": {}
+        },
+        "id": "pinecone1",
+        "name": "Insert Document",
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1,
+        "position": [
+          368,
+          -64
+        ],
+        "credentials": {
+          "pineconeApi": {
+            "id": "oDUaNQi9CfAPmxqQ",
+            "name": "PineconeApi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Upload changes to document to pinecone, check every 24 hours.\n",
+          "height": 640,
+          "width": 1488
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -448,
+          -128
+        ],
+        "id": "99f3877d-b19e-44ff-9548-89b749f077cd",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## AI Chat Agent, answers FAQ from Vector DB, saves contact details and conversation history for future reference",
+          "height": 976,
+          "width": 1872,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -512,
+          656
+        ],
+        "id": "1dfe636f-b1c0-4a1f-8fe3-bea96914d7fd",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "options": {
+            "dimensions": 1024
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          336,
+          160
+        ],
+        "id": "5c3dd88c-fd6c-4400-b9a9-6d2716fd7677",
+        "name": "Embeddings OpenAI",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "dataType": "binary",
+          "textSplittingMode": "custom",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "typeVersion": 1.1,
+        "position": [
+          464,
+          160
+        ],
+        "id": "e5b3cd5c-af2b-4db7-b218-2a6550940186",
+        "name": "Default Data Loader"
+      },
+      {
+        "parameters": {
+          "chunkSize": 2000,
+          "chunkOverlap": 200,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+        "typeVersion": 1,
+        "position": [
+          544,
+          368
+        ],
+        "id": "3e223eac-86f5-47ea-954b-f9f9140333e0",
+        "name": "Recursive Character Text Splitter"
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "options": {
+            "fileName": "={{ $json.name }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          112,
+          144
+        ],
+        "id": "95610eeb-35dd-422d-aff3-d8277f6bb8de",
+        "name": "Download File",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nydSYMORt98OODT6",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {}
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "value": "1um6HPW_wH27PGZatyt0BZ0Eo8qKM0_uU",
+            "mode": "list",
+            "cachedResultName": "Chat Electrical RAG Demo",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1um6HPW_wH27PGZatyt0BZ0Eo8qKM0_uU"
+          },
+          "event": "fileCreated",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          48
+        ],
+        "id": "497854c2-b13b-4c81-8de5-d52fb3f49f10",
+        "name": "Google Drive File Created",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nydSYMORt98OODT6",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "value": "1um6HPW_wH27PGZatyt0BZ0Eo8qKM0_uU",
+            "mode": "list",
+            "cachedResultName": "Chat Electrical RAG Demo",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1um6HPW_wH27PGZatyt0BZ0Eo8qKM0_uU"
+          },
+          "event": "fileUpdated",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          240
+        ],
+        "id": "102d3ff8-97ef-4b59-82bc-08d4d90d5083",
+        "name": "Google Drive File Updated",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nydSYMORt98OODT6",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "description": "Retrieve information from any company documents",
+          "topK": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+        "typeVersion": 1.1,
+        "position": [
+          960,
+          1088
+        ],
+        "id": "1c70f88a-4a1e-44c7-a660-1709e66d088e",
+        "name": "Vector Store Tool"
+      },
+      {
+        "parameters": {
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "bright-spark-faq",
+            "mode": "list",
+            "cachedResultName": "bright-spark-faq"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1.3,
+        "position": [
+          912,
+          1328
+        ],
+        "id": "dc24ac8d-f206-4900-b58d-432f8a3eae51",
+        "name": "Pinecone Vector Store",
+        "credentials": {
+          "pineconeApi": {
+            "id": "oDUaNQi9CfAPmxqQ",
+            "name": "PineconeApi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {
+            "dimensions": 1024
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1168,
+          1504
+        ],
+        "id": "78d3037a-f4ff-47be-8283-fe5ab5de6af1",
+        "name": "Embeddings OpenAI1",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1216,
+          1264
+        ],
+        "id": "d86afd75-ac5f-4c36-80f8-54bd1892d6d1",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "U4bLoAIrldL6Dlze",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.user_message }} {{ $json.data }}",
+          "options": {
+            "systemMessage": "=# ROLE\nYou are a helpful assistant for Bright Spark Electrical. Your job is to answer frequently asked questions in a friendly and concise way. Only provide answers if you have the information, otherwise respond with: “I’m not sure about that, but I can check for you”.  \n\n# TASKS\n- Help the person you are talking to by answering their questions to your best knowledge and tool abilities, **ALWAYS** use the \"Vector Store Tool\" to answer a users questions.\n- Determine if the user has contacted us before. Follow the steps to \"Collect Customer Information\" section\n- For answering user questions, use ONLY information from the knowledge base documents to answer questions. \n- When a task requires using using one of your specified tools, identify which tool is the most appropriate, call it by passing along any required inputs, and execute the actions needed to complete the requests from the human you are talking to. \n- Never make up information or guess. Be concise and get to the point quickly\n- Ask clarifying questions if the request is unclear\n- Attempt to guide the user to book a free 30 minute consultation with Russell. You need to get their full name and email address. You MUST provide them with available time slots to choose from. Don't just book the appointment.\n\n# TOOLS\nYou have acess to multiple tools to help you fullfill requests:\n\n## Save Memory\nUse this tool to save the users name, email and a summary of the current chat as a memory.\n\n## Vector Store Tool\nUse this tool as your knowledgebase. If the user asks you a question, used the tool to provide them an answer. If you don't know the answer, just say you don't know, don't make things up.\n\n## Get Availability\nCall this to get the availability in the calendar. Present a number of different time slot options to the user. Ask the user if they have a preference. Ensure you use the current date and time (i.e. {{ $now }}) when checking availability. Don't display day names in your responses, just dates for the user to choose from. Here is an example of what good looks like: January 1, 2026: 9:00 AM - 10:00 AM. **ALWAYS** provide at least 3 dates for the user to choose from.\n\n## Book Meeting\nCall this tool to create a new meeting with the user. If you don't have the recipient email address, re-ask for the users email address. Ensure you provide the user with a list of avaiablity options for them to choose before booking the appointment.\n\n# COLLECTING CUSTOMER INFORMATION\n- You can try to gather a users name and email addres to store in our CRM as a lead and to save memories for returing customers\n- Do so in a naturaly way, don't be pushy. For example, ask: \"Have you contacted us before?\" \n- If they indicate they have contacted us before, ask their first name and email address\n- If they indicate they haven't contacted them before, naturally and polietly ask for their name and email address. If you get them, use the Save Memory tool.\n- Frame it helpfully: \"To better assist you, may I have your name and email address?\"\n- Don't be pushy, if they decline, continue helping them anyway\n\n# INFORMATION TO COLLECT\nFirstName: {{ $firstName }}\nEmailAdress: {{ $emailAddress }}\nMemory: {{ $memory }}\n\n# HANDLING RETURNING CUSTOMERS\n- If customer context shows previous interactions, you may reference their history ONLY after verifying their identity\n- NEVER assume someone's identity based on first name alone\n- Before discussing any previous conversations or personal details, confirm: \"To make sure I have the right account, can you confirm your email address?\"\n- Once verified, acknowledge their history naturally: \"I can see we spoke about [topic] previously...\"\n- Use their history to provide more personalized and contextual responses\n\n# PRIVACY AND SECURITY\n- Treat all customer information as confidential\n- Never share one customer's information with another\n- Always verify identity before accessing account details or history\n- If someone asks about another person's account, politely decline and explain you can only discuss their own account\n\n# TONE AND STYLE\n- Friendly but professional\n- Concise, clear, direct\n- Use simple language, avoid jargon unless the customer uses it first\n- Show empathy when customers are frustrated\n- End responses with a clear next step or question when appropriate\n\n# NOTES\n- Please always format your answers in plain text, never in markdown or any special characters.\n- This is the current date and time: {{ $now }}. Please consider it taking about dates with a user."
+          }
+        },
+        "id": "agent1",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          368,
+          896
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Amplify Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl03jv1J7cC7BJAG",
+            "mode": "list",
+            "cachedResultName": "Demo Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tbl03jv1J7cC7BJAG"
+          },
+          "filterByFormula": "={Email Address} = \"{{$fromAI('emailaddress')}}\"",
+          "options": {
+            "fields": [
+              "Industry",
+              "Customer Name",
+              "Call Summary",
+              "Memories"
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          -176,
+          1088
+        ],
+        "id": "11094255-cf2a-4bce-9886-837c764aa319",
+        "name": "Search Memories",
+        "alwaysOutputData": true,
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EwvK7eAmkNeEEewM",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "include": "specifiedFields",
+          "fieldsToInclude": "EmailAddress, CreatedAt",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -16,
+          1088
+        ],
+        "id": "c93f95b3-aab6-4a9c-aed1-78b68e2fe81b",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          176,
+          896
+        ],
+        "id": "3eb543e7-ca07-4a4f-bdf1-23284b593841",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "base": {
+            "__rl": true,
+            "value": "appQDmQi1M7QTBg64",
+            "mode": "list",
+            "cachedResultName": "Amplify Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl03jv1J7cC7BJAG",
+            "mode": "list",
+            "cachedResultName": "Demo Leads",
+            "cachedResultUrl": "https://airtable.com/appQDmQi1M7QTBg64/tbl03jv1J7cC7BJAG"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Customer Name": "={{ $fromAI('firstName')}}",
+              "Email Address": "={{ $fromAI('emailAddress')}}",
+              "Memories": "={{ $fromAI('memories')}}"
+            },
+            "matchingColumns": [
+              "Email Address"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Company",
+                "displayName": "Company",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Email Address",
+                "displayName": "Email Address",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Phone Number",
+                "displayName": "Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Active",
+                    "value": "Active"
+                  },
+                  {
+                    "name": "Prospect",
+                    "value": "Prospect"
+                  },
+                  {
+                    "name": "Inactive",
+                    "value": "Inactive"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Industry",
+                "displayName": "Industry",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Date Added",
+                "displayName": "Date Added",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Memories",
+                "displayName": "Memories",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Call Summary",
+                "displayName": "Call Summary",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Customer Sentiment",
+                "displayName": "Customer Sentiment",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtableTool",
+        "typeVersion": 2.1,
+        "position": [
+          448,
+          1120
+        ],
+        "id": "c4bbc66c-4a6f-4ac5-8785-ff163a55e9b8",
+        "name": "Save Memory",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EwvK7eAmkNeEEewM",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Get many events in Google Calendar",
+          "operation": "getAll",
+          "calendar": {
+            "__rl": true,
+            "value": "hello@amplifyautomation.com.au",
+            "mode": "id"
+          },
+          "timeMax": "={{ $now.plus({ week: 2 }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          576,
+          1120
+        ],
+        "id": "aee1c5bc-5f27-48c1-96e1-cac759e0efce",
+        "name": "Get Availablity",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "wBmQc0I9rIP4VvuR",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Create a free 30 minute Voice AI and Automation Discovery call in Google Calendar",
+          "calendar": {
+            "__rl": true,
+            "value": "hello@amplifyautomation.com.au",
+            "mode": "id"
+          },
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "additionalFields": {
+            "attendees": [
+              "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', ``, 'string') }}",
+              "hello@amplifyautomation.ai"
+            ],
+            "conferenceDataUi": {
+              "conferenceDataValues": {
+                "conferenceSolution": "hangoutsMeet"
+              }
+            },
+            "sendUpdates": "all",
+            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          704,
+          1120
+        ],
+        "id": "301abfaf-6335-419b-a88b-eaefe057ca45",
+        "name": "Book Meeting",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "wBmQc0I9rIP4VvuR",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "04ef31b0-a0b3-46e7-8398-e474743d29f7",
+                "name": "session_id",
+                "value": "={{ $json.sessionId }}",
+                "type": "string"
+              },
+              {
+                "id": "54103723-05b0-4689-a653-bbfebb4bd695",
+                "name": "user_message",
+                "value": "={{ $json.chatInput }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -112,
+          896
+        ],
+        "id": "23f9a432-a0c4-402a-accf-6c324fb67b35",
+        "name": "Edit Fields"
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "OpenAI Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Search Memories",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Document": {
+        "ai_vectorStore": [
+          []
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Insert Document",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader": {
+        "ai_document": [
+          [
+            {
+              "node": "Insert Document",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recursive Character Text Splitter": {
+        "ai_textSplitter": [
+          [
+            {
+              "node": "Default Data Loader",
+              "type": "ai_textSplitter",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download File": {
+        "main": [
+          [
+            {
+              "node": "Insert Document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive File Created": {
+        "main": [
+          [
+            {
+              "node": "Download File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive File Updated": {
+        "main": [
+          [
+            {
+              "node": "Download File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Vector Store Tool": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Vector Store": {
+        "ai_vectorStore": [
+          [
+            {
+              "node": "Vector Store Tool",
+              "type": "ai_vectorStore",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI1": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Vector Store",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Vector Store Tool",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Memories": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Memory": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Availablity": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Book Meeting": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false,
+      "errorWorkflow": "bwSF6UHOOMSb4mEW"
+    },
+    "versionId": "90166420-2a88-4071-920c-588b985114b7",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "8f109cae78f8bb33258a0f6c2230ecd3776524e2b719c5f1b9e0d79272ccd79b"
+    },
+    "id": "DxSzvX8VbQEoFArW",
+    "tags": [
+      {
+        "updatedAt": "2025-12-15T11:40:51.694Z",
+        "createdAt": "2025-12-15T11:40:51.694Z",
+        "id": "ccrlq2ZKxy8AzlR2",
+        "name": "DEMO SITE"
+      }
+    ]
+  }
