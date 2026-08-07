@@ -15,8 +15,15 @@ outbound handoff, and chronological audit trail.
 Requires Python 3.11+.
 
 ```powershell
+python -m pip install vendor/deliveryguard-0.2.0-py3-none-any.whl
+python -m pip install -e .
 python -m leaddock.server
 ```
+
+The handoff's idempotency, bounded retry, attempt receipts, dead-lettering,
+crash recovery, and replay are owned by the pinned `deliveryguard` provider
+rather than reimplemented here. `vendor/deliveryguard-0.2.0.sha256` records the
+exact wheel, which CI verifies before installing.
 
 Open `http://127.0.0.1:4310`, select a qualified arrival, choose an available
 slot, and click **Approve + book**. The UI shows the CRM receipt, booking,

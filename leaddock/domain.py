@@ -2,14 +2,34 @@ from __future__ import annotations
 
 import hashlib
 import re
+import tempfile
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from deliveryguard import (
+    ActionState,
+    Classification,
+    DeliveryExecutor,
+    DeliveryFailure,
+    DeliveryResult,
+    DeliveryStore,
+    RetryPolicy,
+    make_idempotency_key,
+)
+
 
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+#: The handoff retry budget. Previously a hardcoded ``range(start, 4)`` loop;
+#: now handed to the provider, which enforces it and records every attempt.
+HANDOFF_MAX_ATTEMPTS = 3
+IDEMPOTENCY_NAMESPACE = "leaddock"
+DELIVERY_DESTINATION = "messaging:local-email-contract"
 
 
 class LeadDockError(ValueError):
@@ -113,22 +133,95 @@ class LocalCalendarAdapter:
 
 
 class LocalMessagingAdapter:
-    def send(self, lead: dict[str, Any], booking: Booking, attempt: int) -> dict[str, Any]:
+    """Deterministic outbound handoff with its own idempotency boundary.
+
+    ``requests`` counts every send that reached the adapter; ``applied`` counts
+    effects actually committed. A correct bounded-retry composition raises only
+    the first counter. The two are kept separate so a duplicated handoff is
+    observable rather than silently collapsed.
+    """
+
+    def __init__(self) -> None:
+        self.requests: list[dict[str, Any]] = []
+        self.applied: dict[str, dict[str, Any]] = {}
+        self.attempts: dict[str, int] = {}
+
+    @property
+    def request_count(self) -> int:
+        return len(self.requests)
+
+    @property
+    def apply_count(self) -> int:
+        return len(self.applied)
+
+    def send(
+        self,
+        lead: dict[str, Any],
+        booking: Booking,
+        *,
+        idempotency_key: str,
+    ) -> tuple[dict[str, Any], bool]:
+        self.requests.append({"idempotency_key": idempotency_key, "lead_id": lead["id"]})
+        if idempotency_key in self.applied:
+            return deepcopy(self.applied[idempotency_key]), True
+        attempt = self.attempts.get(lead["id"], 0) + 1
+        self.attempts[lead["id"]] = attempt
         if "+fail" in lead["email"] and attempt <= 3:
             raise RuntimeError("injected local messaging outage")
-        return {
+        receipt = {
             "id": f"msg_{hashlib.sha1((booking.id + str(attempt)).encode()).hexdigest()[:10]}",
             "channel": "email-contract",
             "recipient": lead["email"],
             "attempt": attempt,
             "status": "delivered",
         }
+        self.applied[idempotency_key] = receipt
+        return deepcopy(receipt), False
+
+
+class MessagingDeliveryAdapter:
+    """Adapts the local handoff to the provider's DeliveryAdapter protocol.
+
+    The provider owns bounded retry, attempt receipts, dead-lettering, crash
+    recovery, and replay. This shim only translates outcomes: an outage is a
+    retryable failure, a recognised idempotency key is an already-applied
+    result, and anything else is a success.
+    """
+
+    def __init__(self, service: LeadDockService) -> None:
+        self.service = service
+
+    def send(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        idempotency_key: str,
+        correlation_id: str,
+    ) -> DeliveryResult:
+        del correlation_id
+        lead = self.service.leads[str(payload["lead_id"])]
+        booking = self.service.calendar.bookings[str(payload["booking_id"])]
+        try:
+            receipt, replayed = self.service.messaging.send(
+                lead, booking, idempotency_key=idempotency_key
+            )
+        except RuntimeError as exc:
+            raise DeliveryFailure(
+                Classification.NETWORK_ERROR,
+                str(exc),
+                retryable=True,
+            ) from None
+        return DeliveryResult(
+            Classification.ALREADY_APPLIED if replayed else Classification.SUCCESS,
+            http_status=None,
+            response=receipt,
+        )
 
 
 class LeadDockService:
     """Deterministic lead-to-booking pipeline used by HTTP, tests, and the UI."""
 
-    def __init__(self, seed: bool = False) -> None:
+    def __init__(self, seed: bool = False, delivery_db: str | Path | None = None) -> None:
         self.leads: dict[str, dict[str, Any]] = {}
         self.identity_index: dict[str, str] = {}
         self.crm = LocalCrmAdapter()
@@ -137,8 +230,27 @@ class LeadDockService:
         self.dead_letters: dict[str, dict[str, Any]] = {}
         self.audit: list[dict[str, Any]] = []
         self._event_no = 0
+        # Handoff durability is provider-owned. The default path is a fresh
+        # per-instance file so the demo stays self-contained; pass an explicit
+        # path when the effect record must survive a restart.
+        self.delivery_db = Path(
+            delivery_db
+            or Path(tempfile.mkdtemp(prefix="leaddock-")) / "deliveries.sqlite3"
+        )
+        self.deliveries = DeliveryStore(self.delivery_db)
+        self.executor = DeliveryExecutor(
+            self.deliveries,
+            MessagingDeliveryAdapter(self),
+            policy=RetryPolicy(max_attempts=HANDOFF_MAX_ATTEMPTS, wait_seconds=0.0),
+        )
         if seed:
             self.seed_demo()
+
+    @staticmethod
+    def handoff_key(lead_id: str, booking_id: str) -> str:
+        return make_idempotency_key(
+            IDEMPOTENCY_NAMESPACE, {"lead_id": lead_id, "booking_id": booking_id}
+        )
 
     def _record(self, event: str, subject: str, **details: Any) -> None:
         self._event_no += 1
@@ -229,22 +341,22 @@ class LeadDockService:
         self._record("lead.rejected", lead_id, reason=reason or "not specified")
         return deepcopy(lead)
 
-    def _deliver(self, lead: dict[str, Any], booking: Booking, start_attempt: int = 1) -> None:
-        last_error = ""
-        for attempt in range(start_attempt, 4):
-            try:
-                receipt = self.messaging.send(lead, booking, attempt)
-                lead["handoff"] = receipt
-                self._record("handoff.delivered", lead["id"], message_id=receipt["id"], attempt=attempt)
-                return
-            except RuntimeError as exc:
-                last_error = str(exc)
-                self._record("handoff.retry", lead["id"], attempt=attempt, error=last_error)
-        dlq_id = f"dlq_{hashlib.sha1(booking.id.encode()).hexdigest()[:10]}"
-        letter = {"id": dlq_id, "lead_id": lead["id"], "booking_id": booking.id, "attempts": 3, "error": last_error, "status": "pending"}
-        self.dead_letters[dlq_id] = letter
-        lead["handoff"] = {"status": "dead_letter", "id": dlq_id}
-        self._record("handoff.dead_lettered", lead["id"], dead_letter_id=dlq_id)
+    def _handoff_payload(self, lead: dict[str, Any], booking: Booking) -> dict[str, Any]:
+        return {
+            "lead_id": lead["id"],
+            "booking_id": booking.id,
+            "recipient": lead["email"],
+        }
+
+    def _deliver(self, lead: dict[str, Any], booking: Booking) -> None:
+        key = self.handoff_key(lead["id"], booking.id)
+        record = self.executor.deliver(
+            idempotency_key=key,
+            destination=DELIVERY_DESTINATION,
+            payload=self._handoff_payload(lead, booking),
+            correlation_id=lead["id"],
+        )
+        self._absorb(lead, booking, record, replayed_from=None)
 
     def replay_dead_letter(self, dlq_id: str) -> dict[str, Any]:
         if dlq_id not in self.dead_letters:
@@ -252,11 +364,75 @@ class LeadDockService:
         letter = self.dead_letters[dlq_id]
         lead = self._lead(letter["lead_id"])
         booking = self.calendar.bookings[letter["booking_id"]]
-        receipt = self.messaging.send(lead, booking, 4)
-        letter["status"] = "replayed"
-        lead["handoff"] = receipt
-        self._record("handoff.replayed", lead["id"], dead_letter_id=dlq_id, message_id=receipt["id"])
-        return {"dead_letter": deepcopy(letter), "lead": deepcopy(lead)}
+        record = self.executor.replay(
+            letter["action_id"],
+            payload=self._handoff_payload(lead, booking),
+            correlation_id=lead["id"],
+        )
+        self._absorb(lead, booking, record, replayed_from=dlq_id)
+        return {"dead_letter": deepcopy(self.dead_letters[dlq_id]), "lead": deepcopy(lead)}
+
+    def _absorb(
+        self,
+        lead: dict[str, Any],
+        booking: Booking,
+        record: Any,
+        *,
+        replayed_from: str | None,
+    ) -> None:
+        """Translate the provider's durable record into LeadDock's audit shape."""
+
+        attempts = [
+            attempt
+            for attempt in self.deliveries.attempts(record.id)
+            if attempt.cycle == record.cycle
+        ]
+        for attempt in attempts:
+            if attempt.classification not in (
+                Classification.SUCCESS,
+                Classification.ALREADY_APPLIED,
+            ):
+                self._record(
+                    "handoff.retry",
+                    lead["id"],
+                    attempt=attempt.cycle_attempt,
+                    error=attempt.error or attempt.classification.value,
+                )
+
+        if record.state in (ActionState.DELIVERED, ActionState.ALREADY_APPLIED):
+            receipt = dict(attempts[-1].response) if attempts else {}
+            lead["handoff"] = receipt
+            if replayed_from:
+                self.dead_letters[replayed_from]["status"] = "replayed"
+                self._record(
+                    "handoff.replayed",
+                    lead["id"],
+                    dead_letter_id=replayed_from,
+                    message_id=receipt.get("id"),
+                )
+            else:
+                self._record(
+                    "handoff.delivered",
+                    lead["id"],
+                    message_id=receipt.get("id"),
+                    attempt=receipt.get("attempt"),
+                )
+            return
+
+        dlq_id = replayed_from or f"dlq_{hashlib.sha1(booking.id.encode()).hexdigest()[:10]}"
+        self.dead_letters[dlq_id] = {
+            "id": dlq_id,
+            "lead_id": lead["id"],
+            "booking_id": booking.id,
+            "action_id": record.id,
+            "idempotency_key": record.idempotency_key,
+            "attempts": record.attempt_count,
+            "cycle": record.cycle,
+            "error": record.last_error or "",
+            "status": "pending",
+        }
+        lead["handoff"] = {"status": "dead_letter", "id": dlq_id}
+        self._record("handoff.dead_lettered", lead["id"], dead_letter_id=dlq_id)
 
     def _lead(self, lead_id: str) -> dict[str, Any]:
         if lead_id not in self.leads:

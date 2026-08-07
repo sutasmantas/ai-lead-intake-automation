@@ -1,0 +1,5 @@
+# The checksum manifest is consumed by `sha256sum -c`, which treats a trailing
+# CR as part of the filename. Keep it LF on every platform.
+*.sha256 text eol=lf
+# Never let end-of-line normalisation touch the pinned provider wheel.
+*.whl binary

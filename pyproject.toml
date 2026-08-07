@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leaddock"
+version = "1.0.0"
+description = "Lead intake, qualification, CRM upsert, booking, and durable handoff with deterministic local adapters."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Mantas Sutas" }]
+dependencies = [
+  "deliveryguard==0.2.0",
+  # zoneinfo has no system tz database on Windows, and every lead carries an
+  # IANA timezone. This was an undeclared requirement before packaging existed.
+  "tzdata; platform_system == 'Windows'",
+]
+
+[tool.setuptools.packages.find]
+include = ["leaddock*"]
