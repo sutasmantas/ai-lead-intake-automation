@@ -2,7 +2,7 @@
 
 Date: 2026-08-05
 
-Purpose: inspect maintained implementations before writing consequential identity, scoring, scheduling or synchronization logic. Licenses are intentionally ignored by portfolio policy; decision value comes from fit, maintenance, known boundaries and integration cost.
+Purpose: inspect maintained implementations before writing consequential identity, scoring, scheduling or synchronization logic. Decision value comes from fit, maintenance, known boundaries and integration cost.
 
 ## Current seams
 
