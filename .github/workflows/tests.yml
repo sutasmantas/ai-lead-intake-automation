@@ -22,6 +22,10 @@ jobs:
         working-directory: vendor
       - run: python -m pip install --upgrade pip
       - run: python -m pip install vendor/deliveryguard-0.2.0-py3-none-any.whl
+      - run: python -m pip install "build>=1.3,<2" "twine>=6.2,<8"
       - run: python -m pip install -e .
       - run: python -m unittest discover -s tests -v
+      - run: python scripts/test_contract_mutants.py
+      - run: python scripts/build_release.py
+      - run: python -m twine check dist/*
       - run: python -m json.tool workflows/leaddock-intake-booking.json > /dev/null

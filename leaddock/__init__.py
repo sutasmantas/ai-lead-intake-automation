@@ -1,5 +1,12 @@
 """LeadDock deterministic RevOps reference implementation."""
 
-from .domain import LeadDockError, LeadDockService
+from .contracts import Booking, LeadDockError, LocalCalendarAdapter, LocalCrmAdapter
+from .domain import LeadDockService
 
-__all__ = ["LeadDockError", "LeadDockService"]
+__all__ = [
+    "Booking",
+    "LeadDockError",
+    "LeadDockService",
+    "LocalCalendarAdapter",
+    "LocalCrmAdapter",
+]

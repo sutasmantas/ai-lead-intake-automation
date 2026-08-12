@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 .venv/
 build/
+dist/
+dist-*/
 *.egg-info/
 .pytest_cache/
 docs/upwork_media/raw_video/

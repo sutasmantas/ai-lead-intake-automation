@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "leaddock"
-version = "1.0.0"
+version = "1.1.0"
 description = "Lead intake, qualification, CRM upsert, booking, and durable handoff with deterministic local adapters."
 readme = "README.md"
 requires-python = ">=3.11"

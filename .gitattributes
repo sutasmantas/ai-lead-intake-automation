@@ -3,3 +3,4 @@
 *.sha256 text eol=lf
 # Never let end-of-line normalisation touch the pinned provider wheel.
 *.whl binary
+*.py text eol=lf

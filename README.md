@@ -27,6 +27,12 @@ crash recovery, and replay are owned by the pinned `deliveryguard` provider
 rather than reimplemented here. `vendor/deliveryguard-0.2.0.sha256` records the
 exact wheel, which CI verifies before installing.
 
+LeadDock `1.1.0` also exposes the credential-free booking and CRM boundary at
+`leaddock.contracts`. FirstRing consumes that exact wheel instead of carrying a
+copy of LeadDock's calendar algorithm. The surface proves stable CRM field
+mapping, offset-aware UTC booking, replay and collision refusal; it is not a
+HubSpot, Airtable, GoHighLevel, Calendly, OAuth or production-persistence claim.
+
 Open `http://127.0.0.1:4310`, select a qualified arrival, choose an available
 slot, and click **Approve + book**. The UI shows the CRM receipt, booking,
 handoff, and audit events. Select **Retry Works**, approve it, then replay the
@@ -36,6 +42,9 @@ Run all focused evidence:
 
 ```powershell
 python -m unittest discover -s tests -v
+python scripts/test_contract_mutants.py
+python scripts/build_release.py
+python -m twine check dist/*
 python -m json.tool workflows/leaddock-intake-booking.json > $null
 docker run --rm -v "${PWD}:/data" n8nio/n8n:2.30.5 import:workflow --input=/data/workflows/leaddock-intake-booking.json
 ```
