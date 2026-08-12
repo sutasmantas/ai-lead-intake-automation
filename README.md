@@ -32,6 +32,8 @@ LeadDock `1.1.0` also exposes the credential-free booking and CRM boundary at
 copy of LeadDock's calendar algorithm. The surface proves stable CRM field
 mapping, offset-aware UTC booking, replay and collision refusal; it is not a
 HubSpot, Airtable, GoHighLevel, Calendly, OAuth or production-persistence claim.
+The reproducible wheel's SHA-256 is
+`0e5715972675973a039b2489fc86c224b5a656689ec23300f6159dea989e5a16`.
 
 Open `http://127.0.0.1:4310`, select a qualified arrival, choose an available
 slot, and click **Approve + book**. The UI shows the CRM receipt, booking,
