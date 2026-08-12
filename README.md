@@ -1,5 +1,7 @@
 # LeadDock
 
+**Verification:** [claim-to-artifact map and rerun commands](https://sutasmantas.github.io/evidence/#leaddock) · [machine-readable receipt](https://sutasmantas.github.io/evidence/receipt.json)
+
 LeadDock is a lead-intake, qualification, CRM, and appointment-booking
 workflow. A lead enters through HTTP or the importable n8n workflow, is
 validated and deduplicated, receives a rules-based qualification result, waits

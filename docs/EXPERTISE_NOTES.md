@@ -1,5 +1,7 @@
 # LeadDock expertise notes
 
+**Verification:** [claim-to-artifact map and rerun commands](https://sutasmantas.github.io/evidence/#leaddock) · [machine-readable receipt](https://sutasmantas.github.io/evidence/receipt.json)
+
 Date: 2026-08-05
 
 These are research-backed operating rules. Their D-series comparisons have not run.
